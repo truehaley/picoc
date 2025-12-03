@@ -67,7 +67,7 @@ char *PlatformGetLine(char *Buf, int MaxLen, const char *Prompt)
 }
 
 /* get a character of interactive input */
-int PlatformGetCharacter()
+int PlatformGetCharacter(void)
 {
     fflush(stdout);
     return getchar();
@@ -136,4 +136,3 @@ void PlatformExit(Picoc *pc, int RetVal)
     pc->PicocExitValue = RetVal;
     longjmp(pc->PicocExitBuf, 1);
 }
-

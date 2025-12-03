@@ -251,6 +251,14 @@ struct ValueType {
     int StaticQualifier;            /* true if it's a static */
 };
 
+struct Value;                       /* Forward declaration */
+
+/* Function Pointer type for Intrinsics */
+typedef void (*IntrinsicFunc)(struct ParseState *Parser,
+			 struct Value *ReturnValue,
+			 struct Value **Param,
+			 int NumArgs);
+
 /* function definition */
 struct FuncDef {
     struct ValueType *ReturnType;   /* the return value type */
@@ -259,7 +267,7 @@ struct FuncDef {
                                         the explicitly specified ones */
     struct ValueType **ParamType;   /* array of parameter types */
     char **ParamName;               /* array of parameter names */
-    void (*Intrinsic)();            /* intrinsic call address or NULL */
+    IntrinsicFunc Intrinsic;        /* intrinsic call address or NULL */
     struct ParseState Body;         /* lexical tokens of the function body if
                                         not intrinsic */
 };
@@ -669,7 +677,7 @@ extern void LexFail(Picoc *pc, struct LexState *Lexer, const char *Message, ...)
 extern void PlatformInit(Picoc *pc);
 extern void PlatformCleanup(Picoc *pc);
 extern char *PlatformGetLine(char *Buf, int MaxLen, const char *Prompt);
-extern int PlatformGetCharacter();
+extern int PlatformGetCharacter(void);
 extern void PlatformPutc(unsigned char OutCh, union OutputStreamInfo *);
 extern void PlatformPrintf(IOFILE *Stream, const char *Format, ...);
 extern void PlatformVPrintf(IOFILE *Stream, const char *Format, va_list Args);

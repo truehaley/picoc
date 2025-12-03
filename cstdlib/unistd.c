@@ -331,11 +331,13 @@ void UnistdRmdir(struct ParseState *Parser, struct Value *ReturnValue,
     ReturnValue->Val->Integer = rmdir(Param[0]->Val->Pointer);
 }
 
+#ifndef __APPLE__ // sbrk is deprecated
 void UnistdSbrk(struct ParseState *Parser, struct Value *ReturnValue,
     struct Value **Param, int NumArgs)
 {
     ReturnValue->Val->Pointer = sbrk(Param[0]->Val->Integer);
 }
+#endif //__APPLE__
 
 void UnistdSetgid(struct ParseState *Parser, struct Value *ReturnValue,
     struct Value **Param, int NumArgs)
@@ -468,11 +470,13 @@ void UnistdUsleep(struct ParseState *Parser, struct Value *ReturnValue,
     ReturnValue->Val->Integer = usleep(Param[0]->Val->Integer);
 }
 
+#ifndef __APPLE__ // vfork is deprecated
 void UnistdVfork(struct ParseState *Parser, struct Value *ReturnValue,
     struct Value **Param, int NumArgs)
 {
     ReturnValue->Val->Integer = vfork();
 }
+#endif // __APPLE__
 
 void UnistdWrite(struct ParseState *Parser, struct Value *ReturnValue,
     struct Value **Param, int NumArgs)
@@ -558,7 +562,9 @@ struct LibraryFunction UnistdFunctions[] =
     {UnistdRead, "ssize_t read(int, void*, size_t);"},
     {UnistdReadlink, "int readlink(char*, char*, size_t);"},
     {UnistdRmdir, "int rmdir(char*);"},
+#ifndef __APPLE__ // sbrk is deprecated
     {UnistdSbrk, "void *sbrk(intptr_t);"},
+#endif
     {UnistdSetgid, "int setgid(gid_t);"},
     {UnistdSetpgid, "int setpgid(pid_t, pid_t);"},
     {UnistdSetpgrp, "pid_t setpgrp(void);"},
@@ -579,7 +585,9 @@ struct LibraryFunction UnistdFunctions[] =
     {UnistdUalarm, "useconds_t ualarm(useconds_t, useconds_t);"},
     {UnistdUnlink, "int unlink(char*);"},
     {UnistdUsleep, "int usleep(useconds_t);"},
+#ifndef __APPLE__ // vfork is deprecated
     {UnistdVfork, "pid_t vfork(void);"},
+#endif
     {UnistdWrite, "ssize_t write(int, void*, size_t);"},
     {NULL, NULL}
 };
@@ -604,4 +612,3 @@ void UnistdSetupFunc(Picoc *pc)
     VariableDefinePlatformVar(pc, NULL, "optopt", &pc->IntType,
         (union AnyValue *)&optopt, true);
 }
-

@@ -1905,7 +1905,6 @@ void ExpressionParseFunctionCall(struct ParseState *Parser,
 
             VariableStackFramePop(Parser);
         } else {
-            // FIXME: too many parameters?
             FuncValue->Val->FuncDef.Intrinsic(Parser, ReturnValue, ParamArray,
                                               ArgCount);
         }
@@ -1935,4 +1934,3 @@ long ExpressionParseInt(struct ParseState *Parser)
 
     return Result;
 }
-

@@ -78,14 +78,14 @@ include jpoirier/Makefile
 	else \
 		../picoc $*.c 2>&1 >$*.output; \
 	fi
-	@if [ "x`diff -qbu $*.expect $*.output`" != "x" ]; \
+	@if [ "x`diff -qb $*.expect $*.output`" != "x" ]; \
 	then \
-        	echo "error in test $*"; \
-        	diff -u $*.expect $*.output; \
-       		rm -f $*.output; \
+		echo "error in test $*"; \
+		diff -u $*.expect $*.output; \
+		rm -f $*.output; \
 		exit 1; \
 	fi; \
-       	rm -f $*.output
+	rm -f $*.output
 
 all: test
 
@@ -106,4 +106,3 @@ jpoirier: $(JPOIRIER_TESTS)
 	@echo "%%%%%%%%%%%% JPoirier Tests Passed %%%%%%%%%%%%"
 	@echo "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
 	@echo
-
