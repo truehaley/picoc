@@ -3,7 +3,7 @@
 #include <errno.h>
 #include <inttypes.h>
 
-#include "../interpreter.h"
+#include "interpreter.h"
 
 #define MAX_FORMAT (80)
 #define MAX_SCANF_ARGS (10)
@@ -938,4 +938,3 @@ void PrintFP(double Num, FILE *Stream)
 {
     fprintf(Stream, "%f", Num);
 }
-

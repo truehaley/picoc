@@ -1,7 +1,7 @@
 /*  */
 #include <errno.h>
 
-#include "../interpreter.h"
+#include "interpreter.h"
 
 
 #ifdef EACCES
@@ -732,4 +732,3 @@ void StdErrnoSetupFunc(Picoc *pc)
     VariableDefinePlatformVar(pc, NULL, "errno", &pc->IntType,
         (union AnyValue*)&errno, true);
 }
-

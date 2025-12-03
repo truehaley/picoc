@@ -2,7 +2,7 @@
 #include <fcntl.h>
 #include <limits.h>
 
-#include "../interpreter.h"
+#include "interpreter.h"
 
 
 static int ZeroValue = 0;

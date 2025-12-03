@@ -1,7 +1,7 @@
 /*  */
 #include <time.h>
 
-#include "../interpreter.h"
+#include "interpreter.h"
 
 
 static int CLOCKS_PER_SECValue = CLOCKS_PER_SEC;
@@ -140,4 +140,3 @@ void StdTimeSetupFunc(Picoc *pc)
         (union AnyValue*)&CLK_TCKValue, false);
 #endif
 }
-

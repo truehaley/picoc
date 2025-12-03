@@ -1,7 +1,7 @@
 /*  */
 #include <stdbool.h>
 
-#include "../interpreter.h"
+#include "interpreter.h"
 
 
 static int trueValue = 1;

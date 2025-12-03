@@ -1,7 +1,7 @@
 /*  */
 #include <string.h>
 
-#include "../interpreter.h"
+#include "interpreter.h"
 
 
 static int String_ZeroValue = 0;
@@ -233,4 +233,3 @@ void StringSetupFunc(Picoc *pc)
         VariableDefinePlatformVar(pc, NULL, "NULL", &pc->IntType,
             (union AnyValue*)&String_ZeroValue, false);
 }
-

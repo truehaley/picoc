@@ -1,7 +1,7 @@
 /*  */
 #include <stdlib.h>
 
-#include "../interpreter.h"
+#include "interpreter.h"
 
 
 static int Stdlib_ZeroValue = 0;
@@ -196,4 +196,3 @@ void StdlibSetupFunc(Picoc *pc)
         VariableDefinePlatformVar(pc, NULL, "NULL", &pc->IntType,
             (union AnyValue*)&Stdlib_ZeroValue, false);
 }
-

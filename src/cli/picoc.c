@@ -13,7 +13,10 @@
 
 
 #if defined(UNIX_HOST) || defined(WIN32)
-#include "LICENSE.h"
+char __LICENSE[] = {
+    #include "LICENSE.h"
+};
+unsigned int __LICENSE_len = sizeof(__LICENSE);
 
 /* Override via STACKSIZE environment variable */
 #define PICOC_STACK_SIZE (128000*4)

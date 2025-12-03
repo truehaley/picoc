@@ -1,7 +1,7 @@
 /*  */
 #include <math.h>
 
-#include "../interpreter.h"
+#include "interpreter.h"
 
 
 static double M_EValue = 2.7182818284590452354;   /* e */

@@ -1,5 +1,5 @@
-#include "../picoc.h"
-#include "../interpreter.h"
+#include "picoc.h"
+#include "interpreter.h"
 
 #ifdef USE_READLINE
 #include <readline/readline.h>

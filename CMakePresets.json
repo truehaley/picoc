@@ -1,0 +1,26 @@
+{
+  "version": 10,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 24,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+        "name": "default",
+        "description": "Default PicoC Release configuration",
+        "binaryDir": "${sourceDir}/build/rel",
+        "cacheVariables": {
+            "CMAKE_BUILD_TYPE": "Release"
+        }
+    },
+    {
+        "name": "dbg",
+        "description": "PicoC Debug configuration",
+        "binaryDir": "${sourceDir}/build/dbg",
+        "cacheVariables": {
+            "CMAKE_BUILD_TYPE": "Debug"
+        }
+    }
+  ]
+}

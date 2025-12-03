@@ -1,4 +1,4 @@
-#include "../interpreter.h"
+#include "interpreter.h"
 
 void MsvcSetupFunc(Picoc *pc)
 {
@@ -29,4 +29,3 @@ void PlatformLibraryInit(Picoc *pc)
 {
     IncludeRegister(pc, "picoc_msvc.h", &MsvcSetupFunc, &MsvcFunctions[0], NULL);
 }
-

@@ -1,7 +1,7 @@
 /*  */
 #include <ctype.h>
 
-#include "../interpreter.h"
+#include "interpreter.h"
 
 
 void StdIsalnum(struct ParseState *Parser, struct Value *ReturnValue,
@@ -122,4 +122,3 @@ struct LibraryFunction StdCtypeFunctions[] =
     {StdToascii, "int toascii(int);"},
     {NULL, NULL }
 };
-
