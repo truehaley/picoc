@@ -5,25 +5,25 @@
 
 #ifdef DEBUGGER
 /* initialize the debugger by clearing the breakpoint table */
-void DebugInit(Picoc *pc)
+void DebugInit(Picoc *picoc)
 {
-    TableInitTable(&pc->BreakpointTable, &pc->BreakpointHashTable[0],
+    TableInitTable(&picoc->BreakpointTable, &picoc->BreakpointHashTable[0],
         BREAKPOINT_TABLE_SIZE, true);
-    pc->BreakpointCount = 0;
+    picoc->BreakpointCount = 0;
 }
 
 /* free the contents of the breakpoint table */
-void DebugCleanup(Picoc *pc)
+void DebugCleanup(Picoc *picoc)
 {
     HashEntry *Entry;
     HashEntry *NextEntry;
     int Count;
 
-    for (Count = 0; Count < pc->BreakpointTable.Size; Count++) {
-        for (Entry = pc->BreakpointHashTable[Count]; Entry != NULL;
+    for (Count = 0; Count < picoc->BreakpointTable.Size; Count++) {
+        for (Entry = picoc->BreakpointHashTable[Count]; Entry != NULL;
                 Entry = NextEntry) {
             NextEntry = Entry->Next;
-            HeapFreeMem(pc, Entry);
+            HeapFreeMem(picoc, Entry);
         }
     }
 }
@@ -33,10 +33,10 @@ static HashEntry *DebugTableSearchBreakpoint(ParseState *Parser,
     int *AddAt)
 {
     HashEntry *Entry;
-    Picoc *pc = Parser->pc;
-    int HashValue = BREAKPOINT_HASH(Parser) % pc->BreakpointTable.Size;
+    Picoc *picoc = Parser->picoc;
+    int HashValue = BREAKPOINT_HASH(Parser) % picoc->BreakpointTable.Size;
 
-    for (Entry = pc->BreakpointHashTable[HashValue];
+    for (Entry = picoc->BreakpointHashTable[HashValue];
             Entry != NULL; Entry = Entry->Next) {
         if (Entry->p.b.FileName == Parser->FileName &&
                 Entry->p.b.Line == Parser->Line &&
@@ -53,20 +53,20 @@ void DebugSetBreakpoint(ParseState *Parser)
 {
     int AddAt;
     HashEntry *FoundEntry = DebugTableSearchBreakpoint(Parser, &AddAt);
-    Picoc *pc = Parser->pc;
+    Picoc *picoc = Parser->picoc;
 
     if (FoundEntry == NULL) {
         /* add it to the table */
-        HashEntry *NewEntry = HeapAllocMem(pc, sizeof(*NewEntry));
+        HashEntry *NewEntry = HeapAllocMem(picoc, sizeof(*NewEntry));
         if (NewEntry == NULL)
-            ProgramFailNoParser(pc, "(DebugSetBreakpoint) out of memory");
+            ProgramFailNoParser(picoc, "(DebugSetBreakpoint) out of memory");
 
         NewEntry->p.b.FileName = Parser->FileName;
         NewEntry->p.b.Line = Parser->Line;
         NewEntry->p.b.CharacterPos = Parser->CharacterPos;
-        NewEntry->Next = pc->BreakpointHashTable[AddAt];
-        pc->BreakpointHashTable[AddAt] = NewEntry;
-        pc->BreakpointCount++;
+        NewEntry->Next = picoc->BreakpointHashTable[AddAt];
+        picoc->BreakpointHashTable[AddAt] = NewEntry;
+        picoc->BreakpointCount++;
     }
 }
 
@@ -74,18 +74,18 @@ void DebugSetBreakpoint(ParseState *Parser)
 int DebugClearBreakpoint(ParseState *Parser)
 {
     HashEntry **EntryPtr;
-    Picoc *pc = Parser->pc;
-    int HashValue = BREAKPOINT_HASH(Parser) % pc->BreakpointTable.Size;
+    Picoc *picoc = Parser->picoc;
+    int HashValue = BREAKPOINT_HASH(Parser) % picoc->BreakpointTable.Size;
 
-    for (EntryPtr = &pc->BreakpointHashTable[HashValue];
+    for (EntryPtr = &picoc->BreakpointHashTable[HashValue];
             *EntryPtr != NULL; EntryPtr = &(*EntryPtr)->Next) {
         HashEntry *DeleteEntry = *EntryPtr;
         if (DeleteEntry->p.b.FileName == Parser->FileName &&
                 DeleteEntry->p.b.Line == Parser->Line &&
                 DeleteEntry->p.b.CharacterPos == Parser->CharacterPos) {
             *EntryPtr = DeleteEntry->Next;
-            HeapFreeMem(pc, DeleteEntry);
-            pc->BreakpointCount--;
+            HeapFreeMem(picoc, DeleteEntry);
+            picoc->BreakpointCount--;
 
             return true;
         }
@@ -100,24 +100,24 @@ void DebugCheckStatement(ParseState *Parser)
 {
     int DoBreak = false;
     int AddAt;
-    Picoc *pc = Parser->pc;
+    Picoc *picoc = Parser->picoc;
 
     /* has the user manually pressed break? */
-    if (pc->DebugManualBreak) {
-        PlatformPrintf(pc->CStdOut, "break\n");
+    if (picoc->DebugManualBreak) {
+        PlatformPrintf(picoc->CStdOut, "break\n");
         DoBreak = true;
-        pc->DebugManualBreak = false;
+        picoc->DebugManualBreak = false;
     }
 
     /* is this a breakpoint location? */
-    if (Parser->pc->BreakpointCount != 0 &&
+    if (Parser->picoc->BreakpointCount != 0 &&
             DebugTableSearchBreakpoint(Parser, &AddAt) != NULL)
         DoBreak = true;
 
     /* handle a break */
     if (DoBreak) {
-        PlatformPrintf(pc->CStdOut, "Handling a break\n");
-        PicocParseInteractiveNoStartPrompt(pc, false);
+        PlatformPrintf(picoc->CStdOut, "Handling a break\n");
+        PicocParseInteractiveNoStartPrompt(picoc, false);
     }
 }
 

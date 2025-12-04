@@ -226,10 +226,10 @@ LibraryFunction StringFunctions[] =
 };
 
 /* creates various system-dependent definitions */
-void StringSetupFunc(Picoc *pc)
+void StringSetupFunc(Picoc *picoc)
 {
     /* define NULL */
-    if (!VariableDefined(pc, TableStrRegister(pc, "NULL")))
-        VariableDefinePlatformVar(pc, NULL, "NULL", &pc->IntType,
+    if (!VariableDefined(picoc, TableStrRegister(picoc, "NULL")))
+        VariableDefinePlatformVar(picoc, NULL, "NULL", &picoc->IntType,
             (AnyValue*)&String_ZeroValue, false);
 }

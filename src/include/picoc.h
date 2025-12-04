@@ -16,21 +16,21 @@
 
 /* this has to be a macro, otherwise errors will occur due to
 	the stack being corrupt */
-#define PicocPlatformSetExitPoint(pc) setjmp((pc)->PicocExitBuf)
+#define PicocPlatformSetExitPoint(picoc) setjmp((picoc)->PicocExitBuf)
 
 
 /* parse.c */
-extern void PicocParse(Picoc *pc, const char *FileName, const char *Source,
+extern void PicocParse(Picoc *picoc, const char *FileName, const char *Source,
 	int SourceLen, int RunIt, int CleanupNow, int CleanupSource, int EnableDebugger);
-extern void PicocParseInteractive(Picoc *pc);
+extern void PicocParseInteractive(Picoc *picoc);
 
 /* platform.c */
-extern void PicocCallMain(Picoc *pc, int argc, char **argv);
-extern void PicocInitialize(Picoc *pc, int StackSize);
-extern void PicocCleanup(Picoc *pc);
-extern void PicocPlatformScanFile(Picoc *pc, const char *FileName);
+extern void PicocCallMain(Picoc *picoc, int argc, char **argv);
+extern void PicocInitialize(Picoc *picoc, int StackSize);
+extern void PicocCleanup(Picoc *picoc);
+extern void PicocPlatformScanFile(Picoc *picoc, const char *FileName);
 
 /* include.c */
-extern void PicocIncludeAllSystemHeaders(Picoc *pc);
+extern void PicocIncludeAllSystemHeaders(Picoc *picoc);
 
 #endif /* PICOC_H */

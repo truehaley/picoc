@@ -4,12 +4,12 @@
 #include "interpreter.h"
 
 
-static ValueType *TypeAdd(Picoc *pc, ParseState *Parser,
+static ValueType *TypeAdd(Picoc *picoc, ParseState *Parser,
     ValueType *ParentType, BaseType Base, int ArraySize,
     const char *Identifier, int Sizeof, int AlignBytes);
-static void TypeAddBaseType(Picoc *pc, ValueType *TypeNode,
+static void TypeAddBaseType(Picoc *picoc, ValueType *TypeNode,
     BaseType Base, int Sizeof, int AlignBytes);
-static void TypeCleanupNode(Picoc *pc, ValueType *Typ);
+static void TypeCleanupNode(Picoc *picoc, ValueType *Typ);
 static void TypeParseStruct(ParseState *Parser, ValueType **Typ,
     int IsStruct);
 static void TypeParseEnum(ParseState *Parser, ValueType **Typ);
@@ -24,11 +24,11 @@ static int IntAlignBytes;
 
 
 /* add a new type to the set of types we know about */
-ValueType *TypeAdd(Picoc *pc, ParseState *Parser,
+ValueType *TypeAdd(Picoc *picoc, ParseState *Parser,
     ValueType *ParentType, BaseType Base, int ArraySize,
     const char *Identifier, int Sizeof, int AlignBytes)
 {
-    ValueType *NewType = VariableAlloc(pc, Parser,
+    ValueType *NewType = VariableAlloc(picoc, Parser,
         sizeof(ValueType), true);
     NewType->Base = Base;
     NewType->ArraySize = ArraySize;
@@ -47,7 +47,7 @@ ValueType *TypeAdd(Picoc *pc, ParseState *Parser,
 
 /* given a parent type, get a matching derived type and make one if necessary.
  * Identifier should be registered with the shared string table. */
-ValueType *TypeGetMatching(Picoc *pc, ParseState *Parser,
+ValueType *TypeGetMatching(Picoc *picoc, ParseState *Parser,
     ValueType *ParentType, BaseType Base, int ArraySize,
     const char *Identifier, int AllowDuplicates)
 {
@@ -84,7 +84,7 @@ ValueType *TypeGetMatching(Picoc *pc, ParseState *Parser,
                     when we add members to them */
     }
 
-    return TypeAdd(pc, Parser, ParentType, Base, ArraySize, Identifier, Sizeof,
+    return TypeAdd(picoc, Parser, ParentType, Base, ArraySize, Identifier, Sizeof,
         AlignBytes);
 }
 
@@ -120,24 +120,24 @@ int TypeSize(ValueType *Typ, int ArraySize, int Compact)
 }
 
 /* add a base type */
-void TypeAddBaseType(Picoc *pc, ValueType *TypeNode, BaseType Base,
+void TypeAddBaseType(Picoc *picoc, ValueType *TypeNode, BaseType Base,
             int Sizeof, int AlignBytes)
 {
     TypeNode->Base = Base;
     TypeNode->ArraySize = 0;
     TypeNode->Sizeof = Sizeof;
     TypeNode->AlignBytes = AlignBytes;
-    TypeNode->Identifier = pc->StrEmpty;
+    TypeNode->Identifier = picoc->StrEmpty;
     TypeNode->Members = NULL;
     TypeNode->FromType = NULL;
     TypeNode->DerivedTypeList = NULL;
     TypeNode->onHeap = false;
-    TypeNode->Next = pc->UberType.DerivedTypeList;
-    pc->UberType.DerivedTypeList = TypeNode;
+    TypeNode->Next = picoc->UberType.DerivedTypeList;
+    picoc->UberType.DerivedTypeList = TypeNode;
 }
 
 /* initialize the type system */
-void TypeInit(Picoc *pc)
+void TypeInit(Picoc *picoc)
 {
     struct IntAlign {char x; int y;} ia;
     struct ShortAlign {char x; short y;} sa;
@@ -149,43 +149,43 @@ void TypeInit(Picoc *pc)
     IntAlignBytes = (char*)&ia.y - &ia.x;
     PointerAlignBytes = (char*)&pa.y - &pa.x;
 
-    pc->UberType.DerivedTypeList = NULL;
-    TypeAddBaseType(pc, &pc->IntType, TypeInt, sizeof(int), IntAlignBytes);
-    TypeAddBaseType(pc, &pc->ShortType, TypeShort, sizeof(short),
+    picoc->UberType.DerivedTypeList = NULL;
+    TypeAddBaseType(picoc, &picoc->IntType, TypeInt, sizeof(int), IntAlignBytes);
+    TypeAddBaseType(picoc, &picoc->ShortType, TypeShort, sizeof(short),
         (char*)&sa.y - &sa.x);
-    TypeAddBaseType(pc, &pc->CharType, TypeChar, sizeof(char),
+    TypeAddBaseType(picoc, &picoc->CharType, TypeChar, sizeof(char),
         (char*)&ca.y - &ca.x);
-    TypeAddBaseType(pc, &pc->LongType, TypeLong, sizeof(long),
+    TypeAddBaseType(picoc, &picoc->LongType, TypeLong, sizeof(long),
         (char*)&la.y - &la.x);
-    TypeAddBaseType(pc, &pc->UnsignedIntType, TypeUnsignedInt,
+    TypeAddBaseType(picoc, &picoc->UnsignedIntType, TypeUnsignedInt,
         sizeof(unsigned int), IntAlignBytes);
-    TypeAddBaseType(pc, &pc->UnsignedShortType, TypeUnsignedShort,
+    TypeAddBaseType(picoc, &picoc->UnsignedShortType, TypeUnsignedShort,
         sizeof(unsigned short), (char*)&sa.y - &sa.x);
-    TypeAddBaseType(pc, &pc->UnsignedLongType, TypeUnsignedLong,
+    TypeAddBaseType(picoc, &picoc->UnsignedLongType, TypeUnsignedLong,
         sizeof(unsigned long), (char*)&la.y - &la.x);
-    TypeAddBaseType(pc, &pc->UnsignedCharType, TypeUnsignedChar,
+    TypeAddBaseType(picoc, &picoc->UnsignedCharType, TypeUnsignedChar,
         sizeof(unsigned char), (char*)&ca.y - &ca.x);
-    TypeAddBaseType(pc, &pc->VoidType, TypeVoid, 0, 1);
-    TypeAddBaseType(pc, &pc->FunctionType, TypeFunction, sizeof(int),
+    TypeAddBaseType(picoc, &picoc->VoidType, TypeVoid, 0, 1);
+    TypeAddBaseType(picoc, &picoc->FunctionType, TypeFunction, sizeof(int),
         IntAlignBytes);
-    TypeAddBaseType(pc, &pc->MacroType, TypeMacro, sizeof(int), IntAlignBytes);
-    TypeAddBaseType(pc, &pc->GotoLabelType, TypeGotoLabel, 0, 1);
-    TypeAddBaseType(pc, &pc->FPType, TypeFP, sizeof(double),
+    TypeAddBaseType(picoc, &picoc->MacroType, TypeMacro, sizeof(int), IntAlignBytes);
+    TypeAddBaseType(picoc, &picoc->GotoLabelType, TypeGotoLabel, 0, 1);
+    TypeAddBaseType(picoc, &picoc->FPType, TypeFP, sizeof(double),
         (char*)&da.y - &da.x);
-    TypeAddBaseType(pc, &pc->TypeType, Type_Type, sizeof(double),
+    TypeAddBaseType(picoc, &picoc->TypeType, Type_Type, sizeof(double),
     (char*)&da.y - &da.x);  /* must be large enough to cast to a double */
-    pc->CharArrayType = TypeAdd(pc, NULL, &pc->CharType, TypeArray, 0,
-        pc->StrEmpty, sizeof(char), (char*)&ca.y - &ca.x);
-    pc->CharPtrType = TypeAdd(pc, NULL, &pc->CharType, TypePointer, 0,
-        pc->StrEmpty, sizeof(void*), PointerAlignBytes);
-    pc->CharPtrPtrType = TypeAdd(pc, NULL, pc->CharPtrType, TypePointer, 0,
-        pc->StrEmpty, sizeof(void*), PointerAlignBytes);
-    pc->VoidPtrType = TypeAdd(pc, NULL, &pc->VoidType, TypePointer, 0,
-        pc->StrEmpty, sizeof(void*), PointerAlignBytes);
+    picoc->CharArrayType = TypeAdd(picoc, NULL, &picoc->CharType, TypeArray, 0,
+        picoc->StrEmpty, sizeof(char), (char*)&ca.y - &ca.x);
+    picoc->CharPtrType = TypeAdd(picoc, NULL, &picoc->CharType, TypePointer, 0,
+        picoc->StrEmpty, sizeof(void*), PointerAlignBytes);
+    picoc->CharPtrPtrType = TypeAdd(picoc, NULL, picoc->CharPtrType, TypePointer, 0,
+        picoc->StrEmpty, sizeof(void*), PointerAlignBytes);
+    picoc->VoidPtrType = TypeAdd(picoc, NULL, &picoc->VoidType, TypePointer, 0,
+        picoc->StrEmpty, sizeof(void*), PointerAlignBytes);
 }
 
 /* deallocate heap-allocated types */
-void TypeCleanupNode(Picoc *pc, ValueType *Typ)
+void TypeCleanupNode(Picoc *picoc, ValueType *Typ)
 {
     ValueType *SubType;
     ValueType *NextSubType;
@@ -194,23 +194,23 @@ void TypeCleanupNode(Picoc *pc, ValueType *Typ)
     for (SubType = Typ->DerivedTypeList; SubType != NULL;
             SubType = NextSubType) {
         NextSubType = SubType->Next;
-        TypeCleanupNode(pc, SubType);
+        TypeCleanupNode(picoc, SubType);
         if (SubType->onHeap) {
             /* if it's a struct or union deallocate all the member values */
             if (SubType->Members != NULL) {
-                VariableTableCleanup(pc, SubType->Members);
-                HeapFreeMem(pc, SubType->Members);
+                VariableTableCleanup(picoc, SubType->Members);
+                HeapFreeMem(picoc, SubType->Members);
             }
 
             /* free this node */
-            HeapFreeMem(pc, SubType);
+            HeapFreeMem(picoc, SubType);
         }
     }
 }
 
-void TypeCleanup(Picoc *pc)
+void TypeCleanup(Picoc *picoc)
 {
-    TypeCleanupNode(pc, &pc->UberType);
+    TypeCleanupNode(picoc, &picoc->UberType);
 }
 
 /* parse a struct or union declaration */
@@ -222,7 +222,7 @@ void TypeParseStruct(ParseState *Parser, ValueType **Typ,
     LexToken Token;
     int AlignBoundary;
     Value *MemberValue;
-    Picoc *pc = Parser->pc;
+    Picoc *picoc = Parser->picoc;
     Value *LexValue;
     ValueType *MemberType;
 
@@ -233,10 +233,10 @@ void TypeParseStruct(ParseState *Parser, ValueType **Typ,
         Token = LexGetToken(Parser, NULL, false);
     } else {
         static char TempNameBuf[7] = "^s0000";
-        StructIdentifier = PlatformMakeTempName(pc, TempNameBuf);
+        StructIdentifier = PlatformMakeTempName(picoc, TempNameBuf);
     }
 
-    *Typ = TypeGetMatching(pc, Parser, &Parser->pc->UberType,
+    *Typ = TypeGetMatching(picoc, Parser, &Parser->picoc->UberType,
         IsStruct ? TypeStruct : TypeUnion, 0, StructIdentifier, true);
     if (Token == TokenLeftBrace && (*Typ)->Members != NULL)
         ProgramFail(Parser, "data type '%t' is already defined", *Typ);
@@ -252,11 +252,11 @@ void TypeParseStruct(ParseState *Parser, ValueType **Typ,
         return;
     }
 
-    if (pc->TopStackFrame != NULL)
+    if (picoc->TopStackFrame != NULL)
         ProgramFail(Parser, "struct/union definitions can only be globals");
 
     LexGetToken(Parser, NULL, true);
-    (*Typ)->Members = VariableAlloc(pc, Parser,
+    (*Typ)->Members = VariableAlloc(picoc, Parser,
         sizeof(HashTable)+STRUCT_TABLE_SIZE*sizeof(HashEntry), true);
     (*Typ)->Members->entries =
         (HashEntry**)((char*)(*Typ)->Members + sizeof(HashTable));
@@ -269,7 +269,7 @@ void TypeParseStruct(ParseState *Parser, ValueType **Typ,
         if (MemberType == NULL || MemberIdentifier == NULL)
             ProgramFail(Parser, "invalid type in struct");
 
-        MemberValue = VariableAllocValueAndData(pc, Parser, sizeof(int), false,
+        MemberValue = VariableAllocValueAndData(picoc, Parser, sizeof(int), false,
             NULL, true);
         MemberValue->Typ = MemberType;
         if (IsStruct) {
@@ -294,7 +294,7 @@ void TypeParseStruct(ParseState *Parser, ValueType **Typ,
             (*Typ)->AlignBytes = MemberValue->Typ->AlignBytes;
 
         /* define it */
-        if (!TableSet(pc, (*Typ)->Members, MemberIdentifier, MemberValue,
+        if (!TableSet(picoc, (*Typ)->Members, MemberIdentifier, MemberValue,
                 Parser->FileName, Parser->Line, Parser->CharacterPos))
             ProgramFail(Parser, "member '%s' already defined", &MemberIdentifier);
 
@@ -312,14 +312,14 @@ void TypeParseStruct(ParseState *Parser, ValueType **Typ,
 }
 
 /* create a system struct which has no user-visible members */
-ValueType *TypeCreateOpaqueStruct(Picoc *pc, ParseState *Parser,
+ValueType *TypeCreateOpaqueStruct(Picoc *picoc, ParseState *Parser,
     const char *StructName, int Size)
 {
-    ValueType *Typ = TypeGetMatching(pc, Parser, &pc->UberType,
+    ValueType *Typ = TypeGetMatching(picoc, Parser, &picoc->UberType,
         TypeStruct, 0, StructName, false);
 
     /* create the (empty) table */
-    Typ->Members = VariableAlloc(pc,
+    Typ->Members = VariableAlloc(picoc,
         Parser,
         sizeof(HashTable)+STRUCT_TABLE_SIZE*sizeof(HashEntry), true);
     Typ->Members->entries = (HashEntry**)((char*)Typ->Members +
@@ -340,7 +340,7 @@ void TypeParseEnum(ParseState *Parser, ValueType **Typ)
     LexToken Token;
     Value *LexValue;
     Value InitValue;
-    Picoc *pc = Parser->pc;
+    Picoc *picoc = Parser->picoc;
 
     Token = LexGetToken(Parser, &LexValue, false);
     if (Token == TokenIdentifier) {
@@ -349,12 +349,12 @@ void TypeParseEnum(ParseState *Parser, ValueType **Typ)
         Token = LexGetToken(Parser, NULL, false);
     } else {
         static char TempNameBuf[7] = "^e0000";
-        EnumIdentifier = PlatformMakeTempName(pc, TempNameBuf);
+        EnumIdentifier = PlatformMakeTempName(picoc, TempNameBuf);
     }
 
-    TypeGetMatching(pc, Parser, &pc->UberType, TypeEnum, 0, EnumIdentifier,
+    TypeGetMatching(picoc, Parser, &picoc->UberType, TypeEnum, 0, EnumIdentifier,
         Token != TokenLeftBrace);
-    *Typ = &pc->IntType;
+    *Typ = &picoc->IntType;
     if (Token != TokenLeftBrace) {
         /* use the already defined enum */
         if ((*Typ)->Members == NULL)
@@ -363,13 +363,13 @@ void TypeParseEnum(ParseState *Parser, ValueType **Typ)
         return;
     }
 
-    if (pc->TopStackFrame != NULL)
+    if (picoc->TopStackFrame != NULL)
         ProgramFail(Parser, "enum definitions can only be globals");
 
     LexGetToken(Parser, NULL, true);
-    (*Typ)->Members = &pc->GlobalTable;
+    (*Typ)->Members = &picoc->GlobalTable;
     memset((void*)&InitValue, '\0', sizeof(Value));
-    InitValue.Typ = &pc->IntType;
+    InitValue.Typ = &picoc->IntType;
     InitValue.Val = (AnyValue*)&EnumValue;
     do {
         if (LexGetToken(Parser, &LexValue, true) != TokenIdentifier)
@@ -381,7 +381,7 @@ void TypeParseEnum(ParseState *Parser, ValueType **Typ)
             EnumValue = ExpressionParseInt(Parser);
         }
 
-        VariableDefine(pc, Parser, EnumIdentifier, &InitValue, NULL, false);
+        VariableDefine(picoc, Parser, EnumIdentifier, &InitValue, NULL, false);
 
         Token = LexGetToken(Parser, NULL, true);
         if (Token != TokenComma && Token != TokenRightBrace)
@@ -401,7 +401,7 @@ int TypeParseFront(ParseState *Parser, ValueType **Typ,
     ParseState Before;
     Value *LexerValue;
     Value *VarValue;
-    Picoc *pc = Parser->pc;
+    Picoc *picoc = Parser->picoc;
     *Typ = NULL;
 
     /* ignore leading type qualifiers */
@@ -426,9 +426,9 @@ int TypeParseFront(ParseState *Parser, ValueType **Typ,
         if (FollowToken != TokenIntType && FollowToken != TokenLongType &&
                 FollowToken != TokenShortType && FollowToken != TokenCharType) {
             if (Token == TokenUnsignedType)
-                *Typ = &pc->UnsignedIntType;
+                *Typ = &picoc->UnsignedIntType;
             else
-                *Typ = &pc->IntType;
+                *Typ = &picoc->IntType;
 
             return true;
         }
@@ -438,23 +438,23 @@ int TypeParseFront(ParseState *Parser, ValueType **Typ,
 
     switch (Token) {
     case TokenIntType:
-        *Typ = Unsigned ? &pc->UnsignedIntType : &pc->IntType;
+        *Typ = Unsigned ? &picoc->UnsignedIntType : &picoc->IntType;
         break;
     case TokenShortType:
-        *Typ = Unsigned ? &pc->UnsignedShortType : &pc->ShortType;
+        *Typ = Unsigned ? &picoc->UnsignedShortType : &picoc->ShortType;
         break;
     case TokenCharType:
-        *Typ = Unsigned ? &pc->UnsignedCharType : &pc->CharType;
+        *Typ = Unsigned ? &picoc->UnsignedCharType : &picoc->CharType;
         break;
     case TokenLongType:
-        *Typ = Unsigned ? &pc->UnsignedLongType : &pc->LongType;
+        *Typ = Unsigned ? &picoc->UnsignedLongType : &picoc->LongType;
         break;
     case TokenFloatType:
     case TokenDoubleType:
-        *Typ = &pc->FPType;
+        *Typ = &picoc->FPType;
         break;
     case TokenVoidType:
-        *Typ = &pc->VoidType;
+        *Typ = &picoc->VoidType;
         break;
     case TokenStructType: case TokenUnionType:
         if (*Typ != NULL)
@@ -469,7 +469,7 @@ int TypeParseFront(ParseState *Parser, ValueType **Typ,
         break;
     case TokenIdentifier:
         /* we already know it's a typedef-defined type because we got here */
-        VariableGet(pc, Parser, LexerValue->Val->Identifier, &VarValue);
+        VariableGet(picoc, Parser, LexerValue->Val->Identifier, &VarValue);
         *Typ = VarValue->Val->Typ;
         break;
 
@@ -496,9 +496,9 @@ ValueType *TypeParseBack(ParseState *Parser,
         if (LexGetToken(Parser, NULL, false) == TokenRightSquareBracket) {
             /* an unsized array */
             LexGetToken(Parser, NULL, true);
-            return TypeGetMatching(Parser->pc, Parser,
+            return TypeGetMatching(Parser->picoc, Parser,
                 TypeParseBack(Parser, FromType), TypeArray, 0,
-                    Parser->pc->StrEmpty, true);
+                    Parser->picoc->StrEmpty, true);
         } else {
             /* get a numeric array size */
             RunMode OldMode = Parser->Mode;
@@ -510,9 +510,9 @@ ValueType *TypeParseBack(ParseState *Parser,
             if (LexGetToken(Parser, NULL, true) != TokenRightSquareBracket)
                 ProgramFail(Parser, "']' expected");
 
-            return TypeGetMatching(Parser->pc, Parser,
+            return TypeGetMatching(Parser->picoc, Parser,
                 TypeParseBack(Parser, FromType), TypeArray, ArraySize,
-                    Parser->pc->StrEmpty, true);
+                    Parser->picoc->StrEmpty, true);
         }
     } else {
         /* the type specification has finished */
@@ -531,7 +531,7 @@ void TypeParseIdentPart(ParseState *Parser, ValueType *BasicTyp,
     Value *LexValue;
     ParseState Before;
     *Typ = BasicTyp;
-    *Identifier = Parser->pc->StrEmpty;
+    *Identifier = Parser->picoc->StrEmpty;
 
     while (!Done) {
         ParserCopy(&Before, Parser);
@@ -550,12 +550,12 @@ void TypeParseIdentPart(ParseState *Parser, ValueType *BasicTyp,
             if (*Typ == NULL)
                 ProgramFail(Parser, "bad type declaration");
 
-            *Typ = TypeGetMatching(Parser->pc, Parser, *Typ, TypePointer, 0,
-                Parser->pc->StrEmpty, true);
+            *Typ = TypeGetMatching(Parser->picoc, Parser, *Typ, TypePointer, 0,
+                Parser->picoc->StrEmpty, true);
             break;
 
         case TokenIdentifier:
-            if (*Typ == NULL || *Identifier != Parser->pc->StrEmpty)
+            if (*Typ == NULL || *Identifier != Parser->picoc->StrEmpty)
                 ProgramFail(Parser, "bad type declaration");
 
             *Identifier = LexValue->Val->Identifier;
@@ -569,7 +569,7 @@ void TypeParseIdentPart(ParseState *Parser, ValueType *BasicTyp,
     if (*Typ == NULL)
         ProgramFail(Parser, "bad type declaration");
 
-    if (*Identifier != Parser->pc->StrEmpty) {
+    if (*Identifier != Parser->picoc->StrEmpty) {
         /* parse stuff after the identifier */
         *Typ = TypeParseBack(Parser, *Typ);
     }

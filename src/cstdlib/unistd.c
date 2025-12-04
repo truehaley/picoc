@@ -595,20 +595,20 @@ LibraryFunction UnistdFunctions[] =
 /* creates various system-dependent definitions */
 extern char *optarg;
 extern int optind, opterr, optopt;
-void UnistdSetupFunc(Picoc *pc)
+void UnistdSetupFunc(Picoc *picoc)
 {
     /* define NULL */
-    if (!VariableDefined(pc, TableStrRegister(pc, "NULL")))
-        VariableDefinePlatformVar(pc, NULL, "NULL", &pc->IntType,
+    if (!VariableDefined(picoc, TableStrRegister(picoc, "NULL")))
+        VariableDefinePlatformVar(picoc, NULL, "NULL", &picoc->IntType,
             (AnyValue*)&ZeroValue, false);
 
     /* define optarg and friends */
-    VariableDefinePlatformVar(pc, NULL, "optarg", pc->CharPtrType,
+    VariableDefinePlatformVar(picoc, NULL, "optarg", picoc->CharPtrType,
         (AnyValue *)&optarg, true);
-    VariableDefinePlatformVar(pc, NULL, "optind", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "optind", &picoc->IntType,
         (AnyValue *)&optind, true);
-    VariableDefinePlatformVar(pc, NULL, "opterr", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "opterr", &picoc->IntType,
         (AnyValue *)&opterr, true);
-    VariableDefinePlatformVar(pc, NULL, "optopt", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "optopt", &picoc->IntType,
         (AnyValue *)&optopt, true);
 }

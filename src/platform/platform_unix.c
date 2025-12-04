@@ -25,17 +25,17 @@ static void BreakHandler(int Signal)
     break_pc->DebugManualBreak = true;
 }
 
-void PlatformInit(Picoc *pc)
+void PlatformInit(Picoc *picoc)
 {
     /* capture the break signal and pass it to the debugger */
-    break_pc = pc;
+    break_pc = picoc;
     signal(SIGINT, BreakHandler);
 }
 #else
-void PlatformInit(Picoc *pc) { }
+void PlatformInit(Picoc *picoc) { }
 #endif
 
-void PlatformCleanup(Picoc *pc) { }
+void PlatformCleanup(Picoc *picoc) { }
 
 /* get a line of interactive input */
 char *PlatformGetLine(char *Buf, int MaxLen, const char *Prompt)
@@ -80,7 +80,7 @@ void PlatformPutc(unsigned char OutCh, OutputStreamInfo *Stream)
 }
 
 /* read a file into memory */
-char *PlatformReadFile(Picoc *pc, const char *FileName)
+char *PlatformReadFile(Picoc *picoc, const char *FileName)
 {
     struct stat FileInfo;
     char *ReadText;
@@ -89,19 +89,19 @@ char *PlatformReadFile(Picoc *pc, const char *FileName)
     char *p;
 
     if (stat(FileName, &FileInfo))
-        ProgramFailNoParser(pc, "can't read file %s\n", FileName);
+        ProgramFailNoParser(picoc, "can't read file %s\n", FileName);
 
     ReadText = malloc(FileInfo.st_size + 1);
     if (ReadText == NULL)
-        ProgramFailNoParser(pc, "out of memory\n");
+        ProgramFailNoParser(picoc, "out of memory\n");
 
     InFile = fopen(FileName, "r");
     if (InFile == NULL)
-        ProgramFailNoParser(pc, "can't read file %s\n", FileName);
+        ProgramFailNoParser(picoc, "can't read file %s\n", FileName);
 
     BytesRead = fread(ReadText, 1, FileInfo.st_size, InFile);
     if (BytesRead == 0)
-        ProgramFailNoParser(pc, "can't read file %s\n", FileName);
+        ProgramFailNoParser(picoc, "can't read file %s\n", FileName);
 
     ReadText[BytesRead] = '\0';
     fclose(InFile);
@@ -116,9 +116,9 @@ char *PlatformReadFile(Picoc *pc, const char *FileName)
 }
 
 /* read and scan a file for definitions */
-void PicocPlatformScanFile(Picoc *pc, const char *FileName)
+void PicocPlatformScanFile(Picoc *picoc, const char *FileName)
 {
-    char *SourceStr = PlatformReadFile(pc, FileName);
+    char *SourceStr = PlatformReadFile(picoc, FileName);
 
     /* ignore "#!/path/to/picoc" .. by replacing the "#!" with "//" */
     if (SourceStr != NULL && SourceStr[0] == '#' && SourceStr[1] == '!') {
@@ -126,13 +126,13 @@ void PicocPlatformScanFile(Picoc *pc, const char *FileName)
         SourceStr[1] = '/';
     }
 
-    PicocParse(pc, FileName, SourceStr, strlen(SourceStr), true, false, true,
+    PicocParse(picoc, FileName, SourceStr, strlen(SourceStr), true, false, true,
         gEnableDebugger);
 }
 
 /* exit the program */
-void PlatformExit(Picoc *pc, int RetVal)
+void PlatformExit(Picoc *picoc, int RetVal)
 {
-    pc->PicocExitValue = RetVal;
-    longjmp(pc->PicocExitBuf, 1);
+    picoc->PicocExitValue = RetVal;
+    longjmp(picoc->PicocExitBuf, 1);
 }

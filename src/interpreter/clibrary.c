@@ -10,26 +10,26 @@ static int LittleEndian;
 
 
 /* global initialisation for libraries */
-void LibraryInit(Picoc *pc)
+void LibraryInit(Picoc *picoc)
 {
 
     /* define the version number macro */
-    pc->VersionString = TableStrRegister(pc, PICOC_VERSION);
-    VariableDefinePlatformVar(pc, NULL, "PICOC_VERSION", pc->CharPtrType,
-        (AnyValue*)&pc->VersionString, false);
+    picoc->VersionString = TableStrRegister(picoc, PICOC_VERSION);
+    VariableDefinePlatformVar(picoc, NULL, "PICOC_VERSION", picoc->CharPtrType,
+        (AnyValue*)&picoc->VersionString, false);
 
     /* define endian-ness macros */
     BigEndian = ((*(char*)&__ENDIAN_CHECK__) == 0);
     LittleEndian = ((*(char*)&__ENDIAN_CHECK__) == 1);
 
-    VariableDefinePlatformVar(pc, NULL, "BIG_ENDIAN", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "BIG_ENDIAN", &picoc->IntType,
         (AnyValue*)&BigEndian, false);
-    VariableDefinePlatformVar(pc, NULL, "LITTLE_ENDIAN", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "LITTLE_ENDIAN", &picoc->IntType,
         (AnyValue*)&LittleEndian, false);
 }
 
 /* add a library */
-void LibraryAdd(Picoc *pc, LibraryFunction *FuncList)
+void LibraryAdd(Picoc *picoc, LibraryFunction *FuncList)
 {
     ParseState Parser;
     int Count;
@@ -37,19 +37,19 @@ void LibraryAdd(Picoc *pc, LibraryFunction *FuncList)
     ValueType *ReturnType;
     Value *NewValue;
     void *Tokens;
-    char *IntrinsicName = TableStrRegister(pc, "c library");
+    char *IntrinsicName = TableStrRegister(picoc, "c library");
 
     /* read all the library definitions */
     for (Count = 0; FuncList[Count].Prototype != NULL; Count++) {
-        Tokens = LexAnalyse(pc,
+        Tokens = LexAnalyse(picoc,
             (const char*)IntrinsicName, FuncList[Count].Prototype,
             strlen((char*)FuncList[Count].Prototype), NULL);
-        LexInitParser(&Parser, pc, FuncList[Count].Prototype, Tokens,
+        LexInitParser(&Parser, picoc, FuncList[Count].Prototype, Tokens,
             IntrinsicName, true, false);
         TypeParse(&Parser, &ReturnType, &Identifier, NULL);
         NewValue = ParseFunctionDefinition(&Parser, ReturnType, Identifier);
         NewValue->Val->FuncDef.Intrinsic = FuncList[Count].Func;
-        HeapFreeMem(pc, Tokens);
+        HeapFreeMem(picoc, Tokens);
     }
 }
 

@@ -1,6 +1,6 @@
 #include "interpreter.h"
 
-void MsvcSetupFunc(Picoc *pc)
+void MsvcSetupFunc(Picoc *picoc)
 {
 }
 
@@ -25,7 +25,7 @@ LibraryFunction MsvcFunctions[] =
     {NULL, NULL}
 };
 
-void PlatformLibraryInit(Picoc *pc)
+void PlatformLibraryInit(Picoc *picoc)
 {
-    IncludeRegister(pc, "picoc_msvc.h", &MsvcSetupFunc, &MsvcFunctions[0], NULL);
+    IncludeRegister(picoc, "picoc_msvc.h", &MsvcSetupFunc, &MsvcFunctions[0], NULL);
 }

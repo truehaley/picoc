@@ -25,17 +25,17 @@ static int gEnableDebugger = false;
 
 
 /* deallocate any memory */
-void ParseCleanup(Picoc *pc)
+void ParseCleanup(Picoc *picoc)
 {
-    while (pc->CleanupTokenList != NULL) {
-        CleanupTokenNode *Next = pc->CleanupTokenList->Next;
+    while (picoc->CleanupTokenList != NULL) {
+        CleanupTokenNode *Next = picoc->CleanupTokenList->Next;
 
-        HeapFreeMem(pc, pc->CleanupTokenList->Tokens);
-        if (pc->CleanupTokenList->SourceText != NULL)
-            HeapFreeMem(pc, (void *)pc->CleanupTokenList->SourceText);
+        HeapFreeMem(picoc, picoc->CleanupTokenList->Tokens);
+        if (picoc->CleanupTokenList->SourceText != NULL)
+            HeapFreeMem(picoc, (void *)picoc->CleanupTokenList->SourceText);
 
-        HeapFreeMem(pc, pc->CleanupTokenList);
-        pc->CleanupTokenList = Next;
+        HeapFreeMem(picoc, picoc->CleanupTokenList);
+        picoc->CleanupTokenList = Next;
     }
 }
 
@@ -85,9 +85,9 @@ Value *ParseFunctionDefinition(ParseState *Parser,
     Value *FuncValue;
     Value *OldFuncValue;
     ParseState FuncBody;
-    Picoc *pc = Parser->pc;
+    Picoc *picoc = Parser->picoc;
 
-    if (pc->TopStackFrame != NULL)
+    if (picoc->TopStackFrame != NULL)
         ProgramFail(Parser, "nested function definitions are not allowed");
 
     LexGetToken(Parser, NULL, true);  /* open bracket */
@@ -96,11 +96,11 @@ Value *ParseFunctionDefinition(ParseState *Parser,
     if (ParamCount > PARAMETER_MAX)
         ProgramFail(Parser, "too many parameters (%d allowed)", PARAMETER_MAX);
 
-    FuncValue = VariableAllocValueAndData(pc, Parser,
+    FuncValue = VariableAllocValueAndData(picoc, Parser,
         sizeof(FuncDef) + sizeof(ValueType*)*ParamCount +
         sizeof(const char*)*ParamCount,
         false, NULL, true);
-    FuncValue->Typ = &pc->FunctionType;
+    FuncValue->Typ = &picoc->FunctionType;
     FuncValue->Val->FuncDef.ReturnType = ReturnType;
     FuncValue->Val->FuncDef.NumParams = ParamCount;
     FuncValue->Val->FuncDef.VarArgs = false;
@@ -142,13 +142,13 @@ Value *ParseFunctionDefinition(ParseState *Parser,
 
     if (strcmp(Identifier, "main") == 0) {
         /* make sure it's int main() */
-        if ( FuncValue->Val->FuncDef.ReturnType != &pc->IntType &&
-             FuncValue->Val->FuncDef.ReturnType != &pc->VoidType )
+        if ( FuncValue->Val->FuncDef.ReturnType != &picoc->IntType &&
+             FuncValue->Val->FuncDef.ReturnType != &picoc->VoidType )
             ProgramFail(Parser, "main() should return an int or void");
 
         if (FuncValue->Val->FuncDef.NumParams != 0 &&
              (FuncValue->Val->FuncDef.NumParams != 2 ||
-                FuncValue->Val->FuncDef.ParamType[0] != &pc->IntType) )
+                FuncValue->Val->FuncDef.ParamType[0] != &picoc->IntType) )
             ProgramFail(Parser, "bad parameters to main()");
     }
 
@@ -170,16 +170,16 @@ Value *ParseFunctionDefinition(ParseState *Parser,
         FuncValue->Val->FuncDef.Body.Pos = LexCopyTokens(&FuncBody, Parser);
 
         /* is this function already in the global table? */
-        if (TableGet(&pc->GlobalTable, Identifier, &OldFuncValue, NULL, NULL, NULL)) {
+        if (TableGet(&picoc->GlobalTable, Identifier, &OldFuncValue, NULL, NULL, NULL)) {
             if (OldFuncValue->Val->FuncDef.Body.Pos == NULL) {
                 /* override an old function prototype */
-                VariableFree(pc, TableDelete(pc, &pc->GlobalTable, Identifier));
+                VariableFree(picoc, TableDelete(picoc, &picoc->GlobalTable, Identifier));
             } else
                 ProgramFail(Parser, "'%s' is already defined", Identifier);
         }
     }
 
-    if (!TableSet(pc, &pc->GlobalTable, Identifier, FuncValue,
+    if (!TableSet(picoc, &picoc->GlobalTable, Identifier, FuncValue,
                 (char*)Parser->FileName, Parser->Line, Parser->CharacterPos))
         ProgramFail(Parser, "'%s' is already defined", Identifier);
 
@@ -207,7 +207,7 @@ int ParseArrayInitializer(ParseState *Parser, Value *NewVariable,
                 NULL, 0, 0, NULL, 0);
 
         if (NewVariable->Typ->ArraySize == 0) {
-            NewVariable->Typ = TypeGetMatching(Parser->pc, Parser,
+            NewVariable->Typ = TypeGetMatching(Parser->picoc, Parser,
                 NewVariable->Typ->FromType, NewVariable->Typ->Base, NumElements,
                 NewVariable->Typ->Identifier, true);
             VariableRealloc(Parser, NewVariable, TypeSizeValue(NewVariable, false));
@@ -342,24 +342,24 @@ int ParseDeclaration(ParseState *Parser, LexToken Token)
     ValueType *BasicType;
     ValueType *Typ;
     Value *NewVariable = NULL;
-    Picoc *pc = Parser->pc;
+    Picoc *picoc = Parser->picoc;
 
     TypeParseFront(Parser, &BasicType, &IsStatic);
     do {
         TypeParseIdentPart(Parser, BasicType, &Typ, &Identifier);
         if ((Token != TokenVoidType && Token != TokenStructType &&
                 Token != TokenUnionType && Token != TokenEnumType) &&
-                Identifier == pc->StrEmpty)
+                Identifier == picoc->StrEmpty)
             ProgramFail(Parser, "identifier expected");
 
-        if (Identifier != pc->StrEmpty) {
+        if (Identifier != picoc->StrEmpty) {
             /* handle function definitions */
             if (LexGetToken(Parser, NULL, false) == TokenOpenBracket)
             {
                 ParseFunctionDefinition(Parser, Typ, Identifier);
                 return false;
             } else {
-                if (Typ == &pc->VoidType && Identifier != pc->StrEmpty)
+                if (Typ == &picoc->VoidType && Identifier != picoc->StrEmpty)
                     ProgramFail(Parser, "can't define a void variable");
 
                 if (Parser->Mode == RunModeRun || Parser->Mode == RunModeGoto)
@@ -405,7 +405,7 @@ void ParseMacroDefinition(ParseState *Parser)
 
         ParserCopy(&ParamParser, Parser);
         NumParams = ParseCountParams(&ParamParser);
-        MacroValue = VariableAllocValueAndData(Parser->pc, Parser,
+        MacroValue = VariableAllocValueAndData(Parser->picoc, Parser,
             sizeof(MacroDef) + sizeof(const char*) * NumParams,
             false, NULL, true);
         MacroValue->Val->MacroDef.NumParams = NumParams;
@@ -432,19 +432,19 @@ void ParseMacroDefinition(ParseState *Parser)
             ProgramFail(Parser, "close bracket expected");
     } else {
         /* allocate a simple unparameterized macro */
-        MacroValue = VariableAllocValueAndData(Parser->pc, Parser,
+        MacroValue = VariableAllocValueAndData(Parser->picoc, Parser,
             sizeof(MacroDef), false, NULL, true);
         MacroValue->Val->MacroDef.NumParams = 0;
     }
 
     /* copy the body of the macro to execute later */
     ParserCopy(&MacroValue->Val->MacroDef.Body, Parser);
-    MacroValue->Typ = &Parser->pc->MacroType;
+    MacroValue->Typ = &Parser->picoc->MacroType;
     LexToEndOfMacro(Parser);
     MacroValue->Val->MacroDef.Body.Pos =
         LexCopyTokens(&MacroValue->Val->MacroDef.Body, Parser);
 
-    if (!TableSet(Parser->pc, &Parser->pc->GlobalTable, MacroNameStr, MacroValue,
+    if (!TableSet(Parser->picoc, &Parser->picoc->GlobalTable, MacroNameStr, MacroValue,
                 (char *)Parser->FileName, Parser->Line, Parser->CharacterPos))
         ProgramFail(Parser, "'%s' is already defined", MacroNameStr);
 }
@@ -579,9 +579,9 @@ void ParseTypedef(ParseState *Parser)
 
     if (Parser->Mode == RunModeRun) {
         TypPtr = &Typ;
-        InitValue.Typ = &Parser->pc->TypeType;
+        InitValue.Typ = &Parser->picoc->TypeType;
         InitValue.Val = (AnyValue*)TypPtr;
-        VariableDefine(Parser->pc, Parser, TypeName, &InitValue, NULL, false);
+        VariableDefine(Parser->picoc, Parser, TypeName, &InitValue, NULL, false);
     }
 }
 
@@ -613,8 +613,8 @@ ParseResult ParseStatement(ParseState *Parser,
     case TokenIdentifier:
         /* might be a typedef-typed variable declaration or it might
             be an expression */
-        if (VariableDefined(Parser->pc, LexerValue->Val->Identifier)) {
-            VariableGet(Parser->pc, Parser, LexerValue->Val->Identifier,
+        if (VariableDefined(Parser->picoc, LexerValue->Val->Identifier)) {
+            VariableGet(Parser->picoc, Parser, LexerValue->Val->Identifier,
                 &VarValue);
             if (VarValue->Typ->Base == Type_Type) {
                 *Parser = PreState;
@@ -744,7 +744,7 @@ ParseResult ParseStatement(ParseState *Parser,
     case TokenHashInclude:
         if (LexGetToken(Parser, &LexerValue, true) != TokenStringConstant)
             ProgramFail(Parser, "\"filename.h\" expected");
-        IncludeFile(Parser->pc, (char *)LexerValue->Val->Pointer);
+        IncludeFile(Parser->picoc, (char *)LexerValue->Val->Pointer);
         CheckTrailingSemicolon = false;
         break;
     case TokenSwitch:
@@ -799,15 +799,15 @@ ParseResult ParseStatement(ParseState *Parser,
         break;
     case TokenReturn:
         if (Parser->Mode == RunModeRun) {
-            if (!Parser->pc->TopStackFrame ||
-                    Parser->pc->TopStackFrame->ReturnValue->Typ->Base != TypeVoid) {
+            if (!Parser->picoc->TopStackFrame ||
+                    Parser->picoc->TopStackFrame->ReturnValue->Typ->Base != TypeVoid) {
                 if (!ExpressionParse(Parser, &CValue))
                     ProgramFail(Parser, "value required in return");
-                if (!Parser->pc->TopStackFrame) /* return from top-level program? */
-                    PlatformExit(Parser->pc, ExpressionCoerceInteger(CValue));
+                if (!Parser->picoc->TopStackFrame) /* return from top-level program? */
+                    PlatformExit(Parser->picoc, ExpressionCoerceInteger(CValue));
                 else
                     ExpressionAssign(Parser,
-                        Parser->pc->TopStackFrame->ReturnValue, CValue, true,
+                        Parser->picoc->TopStackFrame->ReturnValue, CValue, true,
                         NULL, 0, false);
                 VariableStackPop(Parser, CValue);
             } else {
@@ -838,13 +838,13 @@ ParseResult ParseStatement(ParseState *Parser,
                 ProgramFail(Parser, "identifier expected");
             if (Parser->Mode == RunModeRun) {
                 /* delete this variable or function */
-                CValue = TableDelete(Parser->pc, &Parser->pc->GlobalTable,
+                CValue = TableDelete(Parser->picoc, &Parser->picoc->GlobalTable,
                     LexerValue->Val->Identifier);
                 if (CValue == NULL)
                     ProgramFail(Parser, "'%s' is not defined",
                         LexerValue->Val->Identifier);
 
-                VariableFree(Parser->pc, CValue);
+                VariableFree(Parser->picoc, CValue);
             }
             break;
         }
@@ -862,22 +862,22 @@ ParseResult ParseStatement(ParseState *Parser,
 }
 
 /* quick scan a source file for definitions */
-void PicocParse(Picoc *pc, const char *FileName, const char *Source,
+void PicocParse(Picoc *picoc, const char *FileName, const char *Source,
     int SourceLen, int RunIt, int CleanupNow, int CleanupSource,
     int EnableDebugger)
 {
-    char *RegFileName = TableStrRegister(pc, FileName);
+    char *RegFileName = TableStrRegister(picoc, FileName);
     ParseResult result;
     ParseState Parser;
     CleanupTokenNode *NewCleanupNode;
 
-    void *Tokens = LexAnalyse(pc, RegFileName, Source, SourceLen, NULL);
+    void *Tokens = LexAnalyse(picoc, RegFileName, Source, SourceLen, NULL);
 
     /* allocate a cleanup node so we can clean up the tokens later */
     if (!CleanupNow) {
-        NewCleanupNode = HeapAllocMem(pc, sizeof(CleanupTokenNode));
+        NewCleanupNode = HeapAllocMem(picoc, sizeof(CleanupTokenNode));
         if (NewCleanupNode == NULL)
-            ProgramFailNoParser(pc, "(PicocParse) out of memory");
+            ProgramFailNoParser(picoc, "(PicocParse) out of memory");
 
         NewCleanupNode->Tokens = Tokens;
         if (CleanupSource)
@@ -885,12 +885,12 @@ void PicocParse(Picoc *pc, const char *FileName, const char *Source,
         else
             NewCleanupNode->SourceText = NULL;
 
-        NewCleanupNode->Next = pc->CleanupTokenList;
-        pc->CleanupTokenList = NewCleanupNode;
+        NewCleanupNode->Next = picoc->CleanupTokenList;
+        picoc->CleanupTokenList = NewCleanupNode;
     }
 
     /* do the parsing */
-    LexInitParser(&Parser, pc, Source, Tokens, RegFileName, RunIt,
+    LexInitParser(&Parser, picoc, Source, Tokens, RegFileName, RunIt,
         EnableDebugger);
 
     do {
@@ -902,35 +902,35 @@ void PicocParse(Picoc *pc, const char *FileName, const char *Source,
 
     /* clean up */
     if (CleanupNow)
-        HeapFreeMem(pc, Tokens);
+        HeapFreeMem(picoc, Tokens);
 }
 
 /* parse interactively */
-void PicocParseInteractiveNoStartPrompt(Picoc *pc, int EnableDebugger)
+void PicocParseInteractiveNoStartPrompt(Picoc *picoc, int EnableDebugger)
 {
     ParseResult result;
     ParseState Parser;
 
-    LexInitParser(&Parser, pc, NULL, NULL, pc->StrEmpty, true, EnableDebugger);
-    int unused = PicocPlatformSetExitPoint(pc);
-    LexInteractiveClear(pc, &Parser);
+    LexInitParser(&Parser, picoc, NULL, NULL, picoc->StrEmpty, true, EnableDebugger);
+    int unused = PicocPlatformSetExitPoint(picoc);
+    LexInteractiveClear(picoc, &Parser);
 
     do {
-        LexInteractiveStatementPrompt(pc);
+        LexInteractiveStatementPrompt(picoc);
         result = ParseStatement(&Parser, true);
-        LexInteractiveCompleted(pc, &Parser);
+        LexInteractiveCompleted(picoc, &Parser);
 
     } while (result == ParseResultOk);
 
     if (result == ParseResultError)
         ProgramFail(&Parser, "parse error");
 
-    PlatformPrintf(pc->CStdOut, "\n");
+    PlatformPrintf(picoc->CStdOut, "\n");
 }
 
 /* parse interactively, showing a startup message */
-void PicocParseInteractive(Picoc *pc)
+void PicocParseInteractive(Picoc *picoc)
 {
-    PlatformPrintf(pc->CStdOut, INTERACTIVE_PROMPT_START);
-    PicocParseInteractiveNoStartPrompt(pc, gEnableDebugger);
+    PlatformPrintf(picoc->CStdOut, INTERACTIVE_PROMPT_START);
+    PicocParseInteractiveNoStartPrompt(picoc, gEnableDebugger);
 }

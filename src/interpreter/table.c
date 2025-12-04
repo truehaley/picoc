@@ -11,11 +11,11 @@ static HashEntry *TableSearchIdentifier(HashTable *Tbl,
     const char *Key, int Len, int *AddAt);
 
 /* initialize the shared string system */
-void TableInit(Picoc *pc)
+void TableInit(Picoc *picoc)
 {
-    TableInitTable(&pc->StringTable, &pc->StringHashTable[0],
+    TableInitTable(&picoc->StringTable, &picoc->StringHashTable[0],
             STRING_TABLE_SIZE, true);
-    pc->StrEmpty = TableStrRegister(pc, "");
+    picoc->StrEmpty = TableStrRegister(picoc, "");
 }
 
 /* hash function for strings */
@@ -64,14 +64,14 @@ HashEntry *TableSearch(HashTable *Tbl, const char *Key,
 
 /* set an identifier to a value. returns FALSE if it already exists.
  * Key must be a shared string from TableStrRegister() */
-int TableSet(Picoc *pc, HashTable *Tbl, char *Key, Value *Val,
+int TableSet(Picoc *picoc, HashTable *Tbl, char *Key, Value *Val,
     const char *DeclFileName, int DeclLine, int DeclColumn)
 {
     int AddAt;
     HashEntry *FoundEntry = TableSearch(Tbl, Key, &AddAt);
 
     if (FoundEntry == NULL) {   /* add it to the table */
-        HashEntry *NewEntry = VariableAlloc(pc, NULL,
+        HashEntry *NewEntry = VariableAlloc(picoc, NULL,
             sizeof(HashEntry), Tbl->onHeap);
         NewEntry->DeclFileName = DeclFileName;
         NewEntry->DeclLine = DeclLine;
@@ -108,7 +108,7 @@ int TableGet(HashTable *Tbl, const char *Key, Value **Val,
 }
 
 /* remove an entry from the table */
-Value *TableDelete(Picoc *pc, HashTable *Tbl, const char *Key)
+Value *TableDelete(Picoc *picoc, HashTable *Tbl, const char *Key)
 {
     /* shared strings have unique addresses so we don't need to hash them */
     int HashValue = ((unsigned long)Key) % Tbl->Size;
@@ -120,7 +120,7 @@ Value *TableDelete(Picoc *pc, HashTable *Tbl, const char *Key)
             HashEntry *DeleteEntry = *EntryPtr;
             Value *Val = DeleteEntry->p.v.Val;
             *EntryPtr = DeleteEntry->Next;
-            HeapFreeMem(pc, DeleteEntry);
+            HeapFreeMem(picoc, DeleteEntry);
 
             return Val;
         }
@@ -147,7 +147,7 @@ HashEntry *TableSearchIdentifier(HashTable *Tbl,
 }
 
 /* set an identifier and return the identifier. share if possible */
-char *TableSetIdentifier(Picoc *pc, HashTable *Tbl, const char *Ident,
+char *TableSetIdentifier(Picoc *picoc, HashTable *Tbl, const char *Ident,
     int IdentLen)
 {
     int AddAt;
@@ -159,11 +159,11 @@ char *TableSetIdentifier(Picoc *pc, HashTable *Tbl, const char *Ident,
     else {
         /* add it to the table - we economise by not allocating
             the whole structure here */
-        HashEntry *NewEntry = HeapAllocMem(pc,
+        HashEntry *NewEntry = HeapAllocMem(picoc,
             sizeof(HashEntry) -
             sizeof(union TableEntryPayload) + IdentLen + 1);
         if (NewEntry == NULL)
-            ProgramFailNoParser(pc, "(TableSetIdentifier) out of memory");
+            ProgramFailNoParser(picoc, "(TableSetIdentifier) out of memory");
 
         strncpy((char *)&NewEntry->p.Key[0], (char *)Ident, IdentLen);
         NewEntry->p.Key[IdentLen] = '\0';
@@ -174,28 +174,28 @@ char *TableSetIdentifier(Picoc *pc, HashTable *Tbl, const char *Ident,
 }
 
 /* register a string in the shared string store */
-char *TableStrRegister2(Picoc *pc, const char *Str, int Len)
+char *TableStrRegister2(Picoc *picoc, const char *Str, int Len)
 {
-    return TableSetIdentifier(pc, &pc->StringTable, Str, Len);
+    return TableSetIdentifier(picoc, &picoc->StringTable, Str, Len);
 }
 
-char *TableStrRegister(Picoc *pc, const char *Str)
+char *TableStrRegister(Picoc *picoc, const char *Str)
 {
-    return TableStrRegister2(pc, Str, strlen((char *)Str));
+    return TableStrRegister2(picoc, Str, strlen((char *)Str));
 }
 
 /* free all the strings */
-void TableStrFree(Picoc *pc)
+void TableStrFree(Picoc *picoc)
 {
     int Count;
     HashEntry *Entry;
     HashEntry *NextEntry;
 
-    for (Count = 0; Count < pc->StringTable.Size; Count++) {
-        for (Entry = pc->StringTable.entries[Count];
+    for (Count = 0; Count < picoc->StringTable.Size; Count++) {
+        for (Entry = picoc->StringTable.entries[Count];
                 Entry != NULL; Entry = NextEntry) {
             NextEntry = Entry->Next;
-            HeapFreeMem(pc, Entry);
+            HeapFreeMem(picoc, Entry);
         }
     }
 }

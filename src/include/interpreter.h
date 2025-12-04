@@ -45,15 +45,15 @@
 
 /* for debugging */
 #define PRINT_SOURCE_POS() { \
-                                PrintSourceTextErrorLine(Parser->pc->CStdOut, \
+                                PrintSourceTextErrorLine(Parser->picoc->CStdOut, \
                                                          Parser->FileName, \
                                                          Parser->SourceText, \
                                                          Parser->Line, \
                                                          Parser->CharacterPos); \
-                                PlatformPrintf(Parser->pc->CStdOut, "\n"); \
+                                PlatformPrintf(Parser->picoc->CStdOut, "\n"); \
                             }
 
-#define PRINT_TYPE(typ) PlatformPrintf(Parser->pc->CStdOut, "%t\n", typ);
+#define PRINT_TYPE(typ) PlatformPrintf(Parser->picoc->CStdOut, "%t\n", typ);
 
 typedef FILE IOFILE;
 
@@ -102,7 +102,7 @@ typedef enum {
 
 /* parser state - has all this detail so we can parse nested files */
 typedef struct {
-    Picoc *pc;                  /* the picoc instance this parser is a part of */
+    Picoc *picoc;                  /* the picoc instance this parser is a part of */
     const unsigned char *Pos;   /* the character position in the source text */
     char *FileName;             /* what file we're executing (registered string) */
     short int Line;             /* line number we're executing */
@@ -335,7 +335,7 @@ struct TokenLineStruct {
 typedef struct IncludeLibraryStruct IncludeLibrary;
 struct IncludeLibraryStruct {
     char *IncludeName;
-    void (*SetupFunction)(Picoc *pc);
+    void (*SetupFunction)(Picoc *picoc);
     LibraryFunction *FuncList;
     const char *SetupCSource;
     IncludeLibrary *NextLib;
@@ -436,46 +436,46 @@ struct PicocStruct {
 };
 
 /* table.c */
-extern void TableInit(Picoc *pc);
-extern char *TableStrRegister(Picoc *pc, const char *Str);
-extern char *TableStrRegister2(Picoc *pc, const char *Str, int Len);
+extern void TableInit(Picoc *picoc);
+extern char *TableStrRegister(Picoc *picoc, const char *Str);
+extern char *TableStrRegister2(Picoc *picoc, const char *Str, int Len);
 extern void TableInitTable(HashTable *Tbl, HashEntry **storage,
     int Size, bool onHeap);
-extern int TableSet(Picoc *pc, HashTable *Tbl, char *Key, Value *Val,
+extern int TableSet(Picoc *picoc, HashTable *Tbl, char *Key, Value *Val,
     const char *DeclFileName, int DeclLine, int DeclColumn);
 extern int TableGet(HashTable *Tbl, const char *Key, Value **Val,
     const char **DeclFileName, int *DeclLine, int *DeclColumn);
-extern Value *TableDelete(Picoc *pc, HashTable *Tbl, const char *Key);
-extern char *TableSetIdentifier(Picoc *pc, HashTable *Tbl, const char *Ident,
+extern Value *TableDelete(Picoc *picoc, HashTable *Tbl, const char *Key);
+extern char *TableSetIdentifier(Picoc *picoc, HashTable *Tbl, const char *Ident,
     int IdentLen);
-extern void TableStrFree(Picoc *pc);
+extern void TableStrFree(Picoc *picoc);
 
 /* lex.c */
-extern void LexInit(Picoc *pc);
-extern void LexCleanup(Picoc *pc);
-extern void *LexAnalyse(Picoc *pc, const char *FileName, const char *Source,
+extern void LexInit(Picoc *picoc);
+extern void LexCleanup(Picoc *picoc);
+extern void *LexAnalyse(Picoc *picoc, const char *FileName, const char *Source,
     int SourceLen, int *TokenLen);
-extern void LexInitParser(ParseState *Parser, Picoc *pc,
+extern void LexInitParser(ParseState *Parser, Picoc *picoc,
     const char *SourceText, void *TokenSource, char *FileName, int RunIt, int SetDebugMode);
 extern LexToken LexGetToken(ParseState *Parser, Value **Value,
     int IncPos);
 extern LexToken LexRawPeekToken(ParseState *Parser);
 extern void LexToEndOfMacro(ParseState *Parser);
 extern void *LexCopyTokens(ParseState *StartParser, ParseState *EndParser);
-extern void LexInteractiveClear(Picoc *pc, ParseState *Parser);
-extern void LexInteractiveCompleted(Picoc *pc, ParseState *Parser);
-extern void LexInteractiveStatementPrompt(Picoc *pc);
+extern void LexInteractiveClear(Picoc *picoc, ParseState *Parser);
+extern void LexInteractiveCompleted(Picoc *picoc, ParseState *Parser);
+extern void LexInteractiveStatementPrompt(Picoc *picoc);
 
 /* parse.c */
 /* the following are defined in picoc.h:
  * void PicocParse(const char *FileName, const char *Source, int SourceLen, int RunIt, int CleanupNow, int CleanupSource);
  * void PicocParseInteractive(); */
-extern void PicocParseInteractiveNoStartPrompt(Picoc *pc, int EnableDebugger);
+extern void PicocParseInteractiveNoStartPrompt(Picoc *picoc, int EnableDebugger);
 extern ParseResult ParseStatement(ParseState *Parser,
     int CheckTrailingSemicolon);
 extern Value *ParseFunctionDefinition(ParseState *Parser,
     ValueType *ReturnType, char *Identifier);
-extern void ParseCleanup(Picoc *pc);
+extern void ParseCleanup(Picoc *picoc);
 extern void ParserCopyPos(ParseState *To, ParseState *From);
 extern void ParserCopy(ParseState *To, ParseState *From);
 
@@ -489,73 +489,73 @@ extern unsigned long ExpressionCoerceUnsignedInteger(Value *Val);
 extern double ExpressionCoerceFP(Value *Val);
 
 /* type.c */
-extern void TypeInit(Picoc *pc);
-extern void TypeCleanup(Picoc *pc);
+extern void TypeInit(Picoc *picoc);
+extern void TypeCleanup(Picoc *picoc);
 extern int TypeSize(ValueType *Typ, int ArraySize, int Compact);
 extern int TypeSizeValue(Value *Val, int Compact);
 extern int TypeStackSizeValue(Value *Val);
-extern int TypeLastAccessibleOffset(Picoc *pc, Value *Val);
+extern int TypeLastAccessibleOffset(Picoc *picoc, Value *Val);
 extern int TypeParseFront(ParseState *Parser, ValueType **Typ,
     int *IsStatic);
 extern void TypeParseIdentPart(ParseState *Parser,
     ValueType *BasicTyp, ValueType **Typ, char **Identifier);
 extern void TypeParse(ParseState *Parser, ValueType **Typ,
     char **Identifier, int *IsStatic);
-extern ValueType *TypeGetMatching(Picoc *pc, ParseState *Parser,
+extern ValueType *TypeGetMatching(Picoc *picoc, ParseState *Parser,
     ValueType *ParentType, BaseType Base, int ArraySize, const char *Identifier, int AllowDuplicates);
-extern ValueType *TypeCreateOpaqueStruct(Picoc *pc, ParseState *Parser,
+extern ValueType *TypeCreateOpaqueStruct(Picoc *picoc, ParseState *Parser,
     const char *StructName, int Size);
 extern int TypeIsForwardDeclared(ParseState *Parser, ValueType *Typ);
 
 /* heap.c */
 #ifdef DEBUG_HEAP
-extern void ShowBigList(Picoc *pc);
+extern void ShowBigList(Picoc *picoc);
 #endif
-extern void HeapInit(Picoc *pc, int StackSize);
-extern void HeapCleanup(Picoc *pc);
-extern void *HeapAllocStack(Picoc *pc, int Size);
-extern int HeapPopStack(Picoc *pc, void *Addr, int Size);
-extern void HeapUnpopStack(Picoc *pc, int Size);
-extern void HeapPushStackFrame(Picoc *pc);
-extern int HeapPopStackFrame(Picoc *pc);
-extern void *HeapAllocMem(Picoc *pc, int Size);
-extern void HeapFreeMem(Picoc *pc, void *Mem);
+extern void HeapInit(Picoc *picoc, int StackSize);
+extern void HeapCleanup(Picoc *picoc);
+extern void *HeapAllocStack(Picoc *picoc, int Size);
+extern int HeapPopStack(Picoc *picoc, void *Addr, int Size);
+extern void HeapUnpopStack(Picoc *picoc, int Size);
+extern void HeapPushStackFrame(Picoc *picoc);
+extern int HeapPopStackFrame(Picoc *picoc);
+extern void *HeapAllocMem(Picoc *picoc, int Size);
+extern void HeapFreeMem(Picoc *picoc, void *Mem);
 
 /* variable.c */
-extern void VariableInit(Picoc *pc);
-extern void VariableCleanup(Picoc *pc);
-extern void VariableFree(Picoc *pc, Value *Val);
-extern void VariableTableCleanup(Picoc *pc, HashTable *entries);
-extern void *VariableAlloc(Picoc *pc, ParseState *Parser, int Size, bool onHeap);
+extern void VariableInit(Picoc *picoc);
+extern void VariableCleanup(Picoc *picoc);
+extern void VariableFree(Picoc *picoc, Value *Val);
+extern void VariableTableCleanup(Picoc *picoc, HashTable *entries);
+extern void *VariableAlloc(Picoc *picoc, ParseState *Parser, int Size, bool onHeap);
 extern void VariableStackPop(ParseState *Parser, Value *Var);
-extern Value *VariableAllocValueAndData(Picoc *pc, ParseState *Parser,
+extern Value *VariableAllocValueAndData(Picoc *picoc, ParseState *Parser,
     int DataSize, bool IsLValue, Value *LValueFrom, bool onHeap);
-extern Value *VariableAllocValueAndCopy(Picoc *pc, ParseState *Parser,
+extern Value *VariableAllocValueAndCopy(Picoc *picoc, ParseState *Parser,
     Value *FromValue, bool onHeap);
-extern Value *VariableAllocValueFromType(Picoc *pc, ParseState *Parser,
+extern Value *VariableAllocValueFromType(Picoc *picoc, ParseState *Parser,
     ValueType *Typ, bool IsLValue, Value *LValueFrom, bool onHeap);
 extern Value *VariableAllocValueFromExistingData(ParseState *Parser,
     ValueType *Typ, AnyValue *FromValue, bool IsLValue,
     Value *LValueFrom);
 extern Value *VariableAllocValueShared(ParseState *Parser,
     Value *FromValue);
-extern Value *VariableDefine(Picoc *pc, ParseState *Parser,
+extern Value *VariableDefine(Picoc *picoc, ParseState *Parser,
     char *Ident, Value *InitValue, ValueType *Typ, int MakeWritable);
 extern Value *VariableDefineButIgnoreIdentical(ParseState *Parser,
     char *Ident, ValueType *Typ, int IsStatic, int *FirstVisit);
-extern int VariableDefined(Picoc *pc, const char *Ident);
-extern int VariableDefinedAndOutOfScope(Picoc *pc, const char *Ident);
+extern int VariableDefined(Picoc *picoc, const char *Ident);
+extern int VariableDefinedAndOutOfScope(Picoc *picoc, const char *Ident);
 extern void VariableRealloc(ParseState *Parser, Value *FromValue,
     int NewSize);
-extern void VariableGet(Picoc *pc, ParseState *Parser, const char *Ident,
+extern void VariableGet(Picoc *picoc, ParseState *Parser, const char *Ident,
     Value **LVal);
-extern void VariableDefinePlatformVar(Picoc *pc, ParseState *Parser,
+extern void VariableDefinePlatformVar(Picoc *picoc, ParseState *Parser,
     char *Ident, ValueType *Typ, AnyValue *FromValue, int IsWritable);
 extern void VariableStackFrameAdd(ParseState *Parser, const char *FuncName,
     int NumParams);
 extern void VariableStackFramePop(ParseState *Parser);
-extern Value *VariableStringLiteralGet(Picoc *pc, char *Ident);
-extern void VariableStringLiteralDefine(Picoc *pc, char *Ident, Value *Val);
+extern Value *VariableStringLiteralGet(Picoc *picoc, char *Ident);
+extern void VariableStringLiteralDefine(Picoc *picoc, char *Ident, Value *Val);
 extern void *VariableDereferencePointer(Value *PointerValue,
     Value **DerefVal, int *DerefOffset, ValueType **DerefType,
     int *DerefIsLValue);
@@ -563,10 +563,10 @@ extern int VariableScopeBegin(ParseState *Parser, int *PrevScopeID);
 extern void VariableScopeEnd(ParseState *Parser, int ScopeID, int PrevScopeID);
 
 /* clibrary.c */
-extern void BasicIOInit(Picoc *pc);
-extern void LibraryInit(Picoc *pc);
-extern void LibraryAdd(Picoc *pc, LibraryFunction *FuncList);
-extern void CLibraryInit(Picoc *pc);
+extern void BasicIOInit(Picoc *picoc);
+extern void LibraryInit(Picoc *picoc);
+extern void LibraryAdd(Picoc *picoc, LibraryFunction *FuncList);
+extern void CLibraryInit(Picoc *picoc);
 extern void PrintCh(char OutCh, IOFILE *Stream);
 extern void PrintSimpleInt(long Num, IOFILE *Stream);
 extern void PrintInt(long Num, int FieldWidth, int ZeroPad, int LeftJustify,
@@ -586,36 +586,36 @@ extern void LibPrintf(ParseState *Parser, Value *ReturnValue,
  * void PicocPlatformScanFile(const char *FileName);
  * extern int PicocExitValue; */
 extern void ProgramFail(ParseState *Parser, const char *Message, ...);
-extern void ProgramFailNoParser(Picoc *pc, const char *Message, ...);
+extern void ProgramFailNoParser(Picoc *picoc, const char *Message, ...);
 extern void AssignFail(ParseState *Parser, const char *Format,
     ValueType *Type1, ValueType *Type2, int Num1, int Num2,
     const char *FuncName, int ParamNo);
-extern void LexFail(Picoc *pc, LexState *Lexer, const char *Message, ...);
-extern void PlatformInit(Picoc *pc);
-extern void PlatformCleanup(Picoc *pc);
+extern void LexFail(Picoc *picoc, LexState *Lexer, const char *Message, ...);
+extern void PlatformInit(Picoc *picoc);
+extern void PlatformCleanup(Picoc *picoc);
 extern char *PlatformGetLine(char *Buf, int MaxLen, const char *Prompt);
 extern int PlatformGetCharacter(void);
 extern void PlatformPutc(unsigned char OutCh, OutputStreamInfo *);
 extern void PlatformPrintf(IOFILE *Stream, const char *Format, ...);
 extern void PlatformVPrintf(IOFILE *Stream, const char *Format, va_list Args);
-extern void PlatformExit(Picoc *pc, int ExitVal);
-extern char *PlatformMakeTempName(Picoc *pc, char *TempNameBuffer);
-extern void PlatformLibraryInit(Picoc *pc);
+extern void PlatformExit(Picoc *picoc, int ExitVal);
+extern char *PlatformMakeTempName(Picoc *picoc, char *TempNameBuffer);
+extern void PlatformLibraryInit(Picoc *picoc);
 
 /* include.c */
-extern void IncludeInit(Picoc *pc);
-extern void IncludeCleanup(Picoc *pc);
-extern void IncludeRegister(Picoc *pc, const char *IncludeName,
-    void (*SetupFunction)(Picoc *pc), LibraryFunction *FuncList,
+extern void IncludeInit(Picoc *picoc);
+extern void IncludeCleanup(Picoc *picoc);
+extern void IncludeRegister(Picoc *picoc, const char *IncludeName,
+    void (*SetupFunction)(Picoc *picoc), LibraryFunction *FuncList,
     const char *SetupCSource);
-extern void IncludeFile(Picoc *pc, char *Filename);
+extern void IncludeFile(Picoc *picoc, char *Filename);
 /* the following is defined in picoc.h:
  * void PicocIncludeAllSystemHeaders(); */
 
 #ifdef DEBUGGER
 /* debug.c */
-extern void DebugInit(Picoc *pc);
-extern void DebugCleanup(Picoc *pc);
+extern void DebugInit(Picoc *picoc);
+extern void DebugCleanup(Picoc *picoc);
 extern void DebugCheckStatement(ParseState *Parser);
 extern void DebugSetBreakpoint(ParseState *Parser);
 extern int DebugClearBreakpoint(ParseState *Parser);
@@ -625,38 +625,38 @@ extern void DebugStep(void)
 /* stdio.c */
 extern const char StdioDefs[];
 extern LibraryFunction StdioFunctions[];
-extern void StdioSetupFunc(Picoc *pc);
+extern void StdioSetupFunc(Picoc *picoc);
 
 /* math.c */
 extern LibraryFunction MathFunctions[];
-extern void MathSetupFunc(Picoc *pc);
+extern void MathSetupFunc(Picoc *picoc);
 
 /* string.c */
 extern LibraryFunction StringFunctions[];
-extern void StringSetupFunc(Picoc *pc);
+extern void StringSetupFunc(Picoc *picoc);
 
 /* stdlib.c */
 extern LibraryFunction StdlibFunctions[];
-extern void StdlibSetupFunc(Picoc *pc);
+extern void StdlibSetupFunc(Picoc *picoc);
 
 /* time.c */
 extern const char StdTimeDefs[];
 extern LibraryFunction StdTimeFunctions[];
-extern void StdTimeSetupFunc(Picoc *pc);
+extern void StdTimeSetupFunc(Picoc *picoc);
 
 /* errno.c */
-extern void StdErrnoSetupFunc(Picoc *pc);
+extern void StdErrnoSetupFunc(Picoc *picoc);
 
 /* ctype.c */
 extern LibraryFunction StdCtypeFunctions[];
 
 /* stdbool.c */
 extern const char StdboolDefs[];
-extern void StdboolSetupFunc(Picoc *pc);
+extern void StdboolSetupFunc(Picoc *picoc);
 
 /* unistd.c */
 extern const char UnistdDefs[];
 extern LibraryFunction UnistdFunctions[];
-extern void UnistdSetupFunc(Picoc *pc);
+extern void UnistdSetupFunc(Picoc *picoc);
 
 #endif /* INTERPRETER_H */

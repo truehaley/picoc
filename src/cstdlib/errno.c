@@ -326,409 +326,409 @@ static int EXDEVValue = EXDEV;
 
 
 /* creates various system-dependent definitions */
-void StdErrnoSetupFunc(Picoc *pc)
+void StdErrnoSetupFunc(Picoc *picoc)
 {
     /* defines */
 #ifdef EACCES
-    VariableDefinePlatformVar(pc, NULL, "EACCES", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EACCES", &picoc->IntType,
         (AnyValue*)&EACCESValue, false);
 #endif
 
 #ifdef EADDRINUSE
-    VariableDefinePlatformVar(pc, NULL, "EADDRINUSE", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EADDRINUSE", &picoc->IntType,
         (AnyValue*)&EADDRINUSEValue, false);
 #endif
 
 #ifdef EADDRNOTAVAIL
-    VariableDefinePlatformVar(pc, NULL, "EADDRNOTAVAIL", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EADDRNOTAVAIL", &picoc->IntType,
         (AnyValue*)&EADDRNOTAVAILValue, false);
 #endif
 
 #ifdef EAFNOSUPPORT
-    VariableDefinePlatformVar(pc, NULL, "EAFNOSUPPORT", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EAFNOSUPPORT", &picoc->IntType,
         (AnyValue*)&EAFNOSUPPORTValue, false);
 #endif
 
 #ifdef EAGAIN
-    VariableDefinePlatformVar(pc, NULL, "EAGAIN", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EAGAIN", &picoc->IntType,
         (AnyValue*)&EAGAINValue, false);
 #endif
 
 #ifdef EALREADY
-    VariableDefinePlatformVar(pc, NULL, "EALREADY", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EALREADY", &picoc->IntType,
         (AnyValue*)&EALREADYValue, false);
 #endif
 
 #ifdef EBADF
-    VariableDefinePlatformVar(pc, NULL, "EBADF", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EBADF", &picoc->IntType,
         (AnyValue*)&EBADFValue, false);
 #endif
 
 #ifdef EBADMSG
-    VariableDefinePlatformVar(pc, NULL, "EBADMSG", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EBADMSG", &picoc->IntType,
         (AnyValue*)&EBADMSGValue, false);
 #endif
 
 #ifdef EBUSY
-    VariableDefinePlatformVar(pc, NULL, "EBUSY", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EBUSY", &picoc->IntType,
         (AnyValue*)&EBUSYValue, false);
 #endif
 
 #ifdef ECANCELED
-    VariableDefinePlatformVar(pc, NULL, "ECANCELED", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ECANCELED", &picoc->IntType,
         (AnyValue*)&ECANCELEDValue, false);
 #endif
 
 #ifdef ECHILD
-    VariableDefinePlatformVar(pc, NULL, "ECHILD", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ECHILD", &picoc->IntType,
         (AnyValue*)&ECHILDValue, false);
 #endif
 
 #ifdef ECONNABORTED
-    VariableDefinePlatformVar(pc, NULL, "ECONNABORTED", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ECONNABORTED", &picoc->IntType,
         (AnyValue*)&ECONNABORTEDValue, false);
 #endif
 
 #ifdef ECONNREFUSED
-    VariableDefinePlatformVar(pc, NULL, "ECONNREFUSED", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ECONNREFUSED", &picoc->IntType,
         (AnyValue*)&ECONNREFUSEDValue, false);
 #endif
 
 #ifdef ECONNRESET
-    VariableDefinePlatformVar(pc, NULL, "ECONNRESET", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ECONNRESET", &picoc->IntType,
         (AnyValue*)&ECONNRESETValue, false);
 #endif
 
 #ifdef EDEADLK
-    VariableDefinePlatformVar(pc, NULL, "EDEADLK", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EDEADLK", &picoc->IntType,
         (AnyValue*)&EDEADLKValue, false);
 #endif
 
 #ifdef EDESTADDRREQ
-    VariableDefinePlatformVar(pc, NULL, "EDESTADDRREQ", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EDESTADDRREQ", &picoc->IntType,
         (AnyValue*)&EDESTADDRREQValue, false);
 #endif
 
 #ifdef EDOM
-    VariableDefinePlatformVar(pc, NULL, "EDOM", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EDOM", &picoc->IntType,
         (AnyValue*)&EDOMValue, false);
 #endif
 
 #ifdef EDQUOT
-    VariableDefinePlatformVar(pc, NULL, "EDQUOT", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EDQUOT", &picoc->IntType,
         (AnyValue*)&EDQUOTValue, false);
 #endif
 
 #ifdef EEXIST
-    VariableDefinePlatformVar(pc, NULL, "EEXIST", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EEXIST", &picoc->IntType,
         (AnyValue*)&EEXISTValue, false);
 #endif
 
 #ifdef EFAULT
-    VariableDefinePlatformVar(pc, NULL, "EFAULT", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EFAULT", &picoc->IntType,
         (AnyValue*)&EFAULTValue, false);
 #endif
 
 #ifdef EFBIG
-    VariableDefinePlatformVar(pc, NULL, "EFBIG", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EFBIG", &picoc->IntType,
         (AnyValue*)&EFBIGValue, false);
 #endif
 
 #ifdef EHOSTUNREACH
-    VariableDefinePlatformVar(pc, NULL, "EHOSTUNREACH", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EHOSTUNREACH", &picoc->IntType,
         (AnyValue*)&EHOSTUNREACHValue, false);
 #endif
 
 #ifdef EIDRM
-    VariableDefinePlatformVar(pc, NULL, "EIDRM", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EIDRM", &picoc->IntType,
         (AnyValue*)&EIDRMValue, false);
 #endif
 
 #ifdef EILSEQ
-    VariableDefinePlatformVar(pc, NULL, "EILSEQ", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EILSEQ", &picoc->IntType,
         (AnyValue*)&EILSEQValue, false);
 #endif
 
 #ifdef EINPROGRESS
-    VariableDefinePlatformVar(pc, NULL, "EINPROGRESS", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EINPROGRESS", &picoc->IntType,
         (AnyValue*)&EINPROGRESSValue, false);
 #endif
 
 #ifdef EINTR
-    VariableDefinePlatformVar(pc, NULL, "EINTR", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EINTR", &picoc->IntType,
         (AnyValue*)&EINTRValue, false);
 #endif
 
 #ifdef EINVAL
-    VariableDefinePlatformVar(pc, NULL, "EINVAL", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EINVAL", &picoc->IntType,
         (AnyValue*)&EINVALValue, false);
 #endif
 
 #ifdef EIO
-    VariableDefinePlatformVar(pc, NULL, "EIO", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EIO", &picoc->IntType,
         (AnyValue*)&EIOValue, false);
 #endif
 
 #ifdef EISCONN
-    VariableDefinePlatformVar(pc, NULL, "EISCONN", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EISCONN", &picoc->IntType,
         (AnyValue*)&EISCONNValue, false);
 #endif
 
 #ifdef EISDIR
-    VariableDefinePlatformVar(pc, NULL, "EISDIR", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EISDIR", &picoc->IntType,
         (AnyValue*)&EISDIRValue, false);
 #endif
 
 #ifdef ELOOP
-    VariableDefinePlatformVar(pc, NULL, "ELOOP", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ELOOP", &picoc->IntType,
         (AnyValue*)&ELOOPValue, false);
 #endif
 
 #ifdef EMFILE
-    VariableDefinePlatformVar(pc, NULL, "EMFILE", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EMFILE", &picoc->IntType,
         (AnyValue*)&EMFILEValue, false);
 #endif
 
 #ifdef EMLINK
-    VariableDefinePlatformVar(pc, NULL, "EMLINK", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EMLINK", &picoc->IntType,
         (AnyValue*)&EMLINKValue, false);
 #endif
 
 #ifdef EMSGSIZE
-    VariableDefinePlatformVar(pc, NULL, "EMSGSIZE", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EMSGSIZE", &picoc->IntType,
         (AnyValue*)&EMSGSIZEValue, false);
 #endif
 
 #ifdef EMULTIHOP
-    VariableDefinePlatformVar(pc, NULL, "EMULTIHOP", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EMULTIHOP", &picoc->IntType,
         (AnyValue*)&EMULTIHOPValue, false);
 #endif
 
 #ifdef ENAMETOOLONG
-    VariableDefinePlatformVar(pc, NULL, "ENAMETOOLONG", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ENAMETOOLONG", &picoc->IntType,
         (AnyValue*)&ENAMETOOLONGValue, false);
 #endif
 
 #ifdef ENETDOWN
-    VariableDefinePlatformVar(pc, NULL, "ENETDOWN", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ENETDOWN", &picoc->IntType,
         (AnyValue*)&ENETDOWNValue, false);
 #endif
 
 #ifdef ENETRESET
-    VariableDefinePlatformVar(pc, NULL, "ENETRESET", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ENETRESET", &picoc->IntType,
         (AnyValue*)&ENETRESETValue, false);
 #endif
 
 #ifdef ENETUNREACH
-    VariableDefinePlatformVar(pc, NULL, "ENETUNREACH", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ENETUNREACH", &picoc->IntType,
         (AnyValue*)&ENETUNREACHValue, false);
 #endif
 
 #ifdef ENFILE
-    VariableDefinePlatformVar(pc, NULL, "ENFILE", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ENFILE", &picoc->IntType,
         (AnyValue*)&ENFILEValue, false);
 #endif
 
 #ifdef ENOBUFS
-    VariableDefinePlatformVar(pc, NULL, "ENOBUFS", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ENOBUFS", &picoc->IntType,
         (AnyValue*)&ENOBUFSValue, false);
 #endif
 
 #ifdef ENODATA
-    VariableDefinePlatformVar(pc, NULL, "ENODATA", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ENODATA", &picoc->IntType,
         (AnyValue*)&ENODATAValue, false);
 #endif
 
 #ifdef ENODEV
-    VariableDefinePlatformVar(pc, NULL, "ENODEV", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ENODEV", &picoc->IntType,
         (AnyValue*)&ENODEVValue, false);
 #endif
 
 #ifdef ENOENT
-    VariableDefinePlatformVar(pc, NULL, "ENOENT", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ENOENT", &picoc->IntType,
         (AnyValue*)&ENOENTValue, false);
 #endif
 
 #ifdef ENOEXEC
-    VariableDefinePlatformVar(pc, NULL, "ENOEXEC", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ENOEXEC", &picoc->IntType,
         (AnyValue*)&ENOEXECValue, false);
 #endif
 
 #ifdef ENOLCK
-    VariableDefinePlatformVar(pc, NULL, "ENOLCK", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ENOLCK", &picoc->IntType,
         (AnyValue*)&ENOLCKValue, false);
 #endif
 
 #ifdef ENOLINK
-    VariableDefinePlatformVar(pc, NULL, "ENOLINK", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ENOLINK", &picoc->IntType,
         (AnyValue*)&ENOLINKValue, false);
 #endif
 
 #ifdef ENOMEM
-    VariableDefinePlatformVar(pc, NULL, "ENOMEM", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ENOMEM", &picoc->IntType,
         (AnyValue*)&ENOMEMValue, false);
 #endif
 
 #ifdef ENOMSG
-    VariableDefinePlatformVar(pc, NULL, "ENOMSG", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ENOMSG", &picoc->IntType,
         (AnyValue*)&ENOMSGValue, false);
 #endif
 
 #ifdef ENOPROTOOPT
-    VariableDefinePlatformVar(pc, NULL, "ENOPROTOOPT", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ENOPROTOOPT", &picoc->IntType,
         (AnyValue*)&ENOPROTOOPTValue, false);
 #endif
 
 #ifdef ENOSPC
-    VariableDefinePlatformVar(pc, NULL, "ENOSPC", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ENOSPC", &picoc->IntType,
         (AnyValue*)&ENOSPCValue, false);
 #endif
 
 #ifdef ENOSR
-    VariableDefinePlatformVar(pc, NULL, "ENOSR", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ENOSR", &picoc->IntType,
         (AnyValue*)&ENOSRValue, false);
 #endif
 
 #ifdef ENOSTR
-    VariableDefinePlatformVar(pc, NULL, "ENOSTR", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ENOSTR", &picoc->IntType,
         (AnyValue*)&ENOSTRValue, false);
 #endif
 
 #ifdef ENOSYS
-    VariableDefinePlatformVar(pc, NULL, "ENOSYS", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ENOSYS", &picoc->IntType,
         (AnyValue*)&ENOSYSValue, false);
 #endif
 
 #ifdef ENOTCONN
-    VariableDefinePlatformVar(pc, NULL, "ENOTCONN", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ENOTCONN", &picoc->IntType,
         (AnyValue*)&ENOTCONNValue, false);
 #endif
 
 #ifdef ENOTDIR
-    VariableDefinePlatformVar(pc, NULL, "ENOTDIR", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ENOTDIR", &picoc->IntType,
         (AnyValue*)&ENOTDIRValue, false);
 #endif
 
 #ifdef ENOTEMPTY
-    VariableDefinePlatformVar(pc, NULL, "ENOTEMPTY", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ENOTEMPTY", &picoc->IntType,
         (AnyValue*)&ENOTEMPTYValue, false);
 #endif
 
 #ifdef ENOTRECOVERABLE
-    VariableDefinePlatformVar(pc, NULL, "ENOTRECOVERABLE", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ENOTRECOVERABLE", &picoc->IntType,
         (AnyValue*)&ENOTRECOVERABLEValue, false);
 #endif
 
 #ifdef ENOTSOCK
-    VariableDefinePlatformVar(pc, NULL, "ENOTSOCK", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ENOTSOCK", &picoc->IntType,
         (AnyValue*)&ENOTSOCKValue, false);
 #endif
 
 #ifdef ENOTSUP
-    VariableDefinePlatformVar(pc, NULL, "ENOTSUP", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ENOTSUP", &picoc->IntType,
         (AnyValue*)&ENOTSUPValue, false);
 #endif
 
 #ifdef ENOTTY
-    VariableDefinePlatformVar(pc, NULL, "ENOTTY", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ENOTTY", &picoc->IntType,
         (AnyValue*)&ENOTTYValue, false);
 #endif
 
 #ifdef ENXIO
-    VariableDefinePlatformVar(pc, NULL, "ENXIO", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ENXIO", &picoc->IntType,
         (AnyValue*)&ENXIOValue, false);
 #endif
 
 #ifdef EOPNOTSUPP
-    VariableDefinePlatformVar(pc, NULL, "EOPNOTSUPP", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EOPNOTSUPP", &picoc->IntType,
         (AnyValue*)&EOPNOTSUPPValue, false);
 #endif
 
 #ifdef EOVERFLOW
-    VariableDefinePlatformVar(pc, NULL, "EOVERFLOW", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EOVERFLOW", &picoc->IntType,
         (AnyValue*)&EOVERFLOWValue, false);
 #endif
 
 #ifdef EOWNERDEAD
-    VariableDefinePlatformVar(pc, NULL, "EOWNERDEAD", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EOWNERDEAD", &picoc->IntType,
         (AnyValue*)&EOWNERDEADValue, false);
 #endif
 
 #ifdef EPERM
-    VariableDefinePlatformVar(pc, NULL, "EPERM", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EPERM", &picoc->IntType,
         (AnyValue*)&EPERMValue, false);
 #endif
 
 #ifdef EPIPE
-    VariableDefinePlatformVar(pc, NULL, "EPIPE", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EPIPE", &picoc->IntType,
         (AnyValue*)&EPIPEValue, false);
 #endif
 
 #ifdef EPROTO
-    VariableDefinePlatformVar(pc, NULL, "EPROTO", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EPROTO", &picoc->IntType,
         (AnyValue*)&EPROTOValue, false);
 #endif
 
 #ifdef EPROTONOSUPPORT
-    VariableDefinePlatformVar(pc, NULL, "EPROTONOSUPPORT", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EPROTONOSUPPORT", &picoc->IntType,
         (AnyValue*)&EPROTONOSUPPORTValue, false);
 #endif
 
 #ifdef EPROTOTYPE
-    VariableDefinePlatformVar(pc, NULL, "EPROTOTYPE", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EPROTOTYPE", &picoc->IntType,
         (AnyValue*)&EPROTOTYPEValue, false);
 #endif
 
 #ifdef ERANGE
-    VariableDefinePlatformVar(pc, NULL, "ERANGE", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ERANGE", &picoc->IntType,
         (AnyValue*)&ERANGEValue, false);
 #endif
 
 #ifdef EROFS
-    VariableDefinePlatformVar(pc, NULL, "EROFS", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EROFS", &picoc->IntType,
         (AnyValue*)&EROFSValue, false);
 #endif
 
 #ifdef ESPIPE
-    VariableDefinePlatformVar(pc, NULL, "ESPIPE", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ESPIPE", &picoc->IntType,
         (AnyValue*)&ESPIPEValue, false);
 #endif
 
 #ifdef ESRCH
-    VariableDefinePlatformVar(pc, NULL, "ESRCH", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ESRCH", &picoc->IntType,
         (AnyValue*)&ESRCHValue, false);
 #endif
 
 #ifdef ESTALE
-    VariableDefinePlatformVar(pc, NULL, "ESTALE", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ESTALE", &picoc->IntType,
         (AnyValue*)&ESTALEValue, false);
 #endif
 
 #ifdef ETIME
-    VariableDefinePlatformVar(pc, NULL, "ETIME", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ETIME", &picoc->IntType,
         (AnyValue*)&ETIMEValue, false);
 #endif
 
 #ifdef ETIMEDOUT
-    VariableDefinePlatformVar(pc, NULL, "ETIMEDOUT", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ETIMEDOUT", &picoc->IntType,
         (AnyValue*)&ETIMEDOUTValue, false);
 #endif
 
 #ifdef ETXTBSY
-    VariableDefinePlatformVar(pc, NULL, "ETXTBSY", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "ETXTBSY", &picoc->IntType,
         (AnyValue*)&ETXTBSYValue, false);
 #endif
 
 #ifdef EWOULDBLOCK
-    VariableDefinePlatformVar(pc, NULL, "EWOULDBLOCK", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EWOULDBLOCK", &picoc->IntType,
         (AnyValue*)&EWOULDBLOCKValue, false);
 #endif
 
 #ifdef EXDEV
-    VariableDefinePlatformVar(pc, NULL, "EXDEV", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "EXDEV", &picoc->IntType,
         (AnyValue*)&EXDEVValue, false);
 #endif
 
-    VariableDefinePlatformVar(pc, NULL, "errno", &pc->IntType,
+    VariableDefinePlatformVar(picoc, NULL, "errno", &picoc->IntType,
         (AnyValue*)&errno, true);
 }

@@ -1,6 +1,6 @@
 #include "interpreter.h"
 
-void UnixSetupFunc(Picoc *pc)
+void UnixSetupFunc(Picoc *picoc)
 {
 }
 
@@ -25,7 +25,7 @@ LibraryFunction UnixFunctions[] =
     {NULL, NULL}
 };
 
-void PlatformLibraryInit(Picoc *pc)
+void PlatformLibraryInit(Picoc *picoc)
 {
-    IncludeRegister(pc, "picoc_unix.h", &UnixSetupFunc, &UnixFunctions[0], NULL);
+    IncludeRegister(picoc, "picoc_unix.h", &UnixSetupFunc, &UnixFunctions[0], NULL);
 }

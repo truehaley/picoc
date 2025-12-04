@@ -92,7 +92,7 @@ void StdlibAbort(ParseState *Parser, Value *ReturnValue,
 void StdlibExit(ParseState *Parser, Value *ReturnValue,
     Value **Param, int NumArgs)
 {
-    PlatformExit(Parser->pc, Param[0]->Val->Integer);
+    PlatformExit(Parser->picoc, Param[0]->Val->Integer);
 }
 
 void StdlibGetenv(ParseState *Parser, Value *ReturnValue,
@@ -189,10 +189,10 @@ LibraryFunction StdlibFunctions[] =
 };
 
 /* creates various system-dependent definitions */
-void StdlibSetupFunc(Picoc *pc)
+void StdlibSetupFunc(Picoc *picoc)
 {
     /* define NULL, TRUE and FALSE */
-    if (!VariableDefined(pc, TableStrRegister(pc, "NULL")))
-        VariableDefinePlatformVar(pc, NULL, "NULL", &pc->IntType,
+    if (!VariableDefined(picoc, TableStrRegister(picoc, "NULL")))
+        VariableDefinePlatformVar(picoc, NULL, "NULL", &picoc->IntType,
             (AnyValue*)&Stdlib_ZeroValue, false);
 }
