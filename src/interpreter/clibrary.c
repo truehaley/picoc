@@ -29,7 +29,7 @@ void LibraryInit(Picoc *pc)
 }
 
 /* add a library */
-void LibraryAdd(Picoc *pc, struct LibraryFunction *FuncList)
+void LibraryAdd(Picoc *pc, LibraryFunction *FuncList)
 {
     ParseState Parser;
     int Count;

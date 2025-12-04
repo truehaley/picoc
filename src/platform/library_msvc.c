@@ -18,7 +18,7 @@ void CLineNo (ParseState *Parser, Value *ReturnValue,
 }
 
 /* list of all library functions and their prototypes */
-struct LibraryFunction MsvcFunctions[] =
+LibraryFunction MsvcFunctions[] =
 {
     {CTest, "void Test(int);"},
     {CLineNo, "int LineNo();"},

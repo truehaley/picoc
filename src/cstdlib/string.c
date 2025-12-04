@@ -190,7 +190,7 @@ void StringStrtok_r(ParseState *Parser, Value *ReturnValue,
 #endif
 
 /* all string.h functions */
-struct LibraryFunction StringFunctions[] =
+LibraryFunction StringFunctions[] =
 {
 #ifndef WIN32
 	{StringIndex,   "char *index(char *,int);"},

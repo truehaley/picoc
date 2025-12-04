@@ -201,7 +201,7 @@ Each of the library_XXX.c files defines a list of picoc prototypes for each of
 the functions it defines. For example:
 
 ```C
-struct LibraryFunction PlatformLibrary[] =
+LibraryFunction PlatformLibrary[] =
 {
      {ShowComplex,  "void ShowComplex(struct complex *)"},
      {Cpeek,        "int peek(int, int)"},

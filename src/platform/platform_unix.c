@@ -74,7 +74,7 @@ int PlatformGetCharacter(void)
 }
 
 /* write a character to the console */
-void PlatformPutc(unsigned char OutCh, union OutputStreamInfo *Stream)
+void PlatformPutc(unsigned char OutCh, OutputStreamInfo *Stream)
 {
     putchar(OutCh);
 }

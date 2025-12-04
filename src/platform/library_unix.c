@@ -18,7 +18,7 @@ void Clineno (ParseState *Parser, Value *ReturnValue,
 }
 
 /* list of all library functions and their prototypes */
-struct LibraryFunction UnixFunctions[] =
+LibraryFunction UnixFunctions[] =
 {
     {Ctest, "void test(int);"},
     {Clineno, "int lineno();"},

@@ -461,18 +461,18 @@ void VariableStackPop(ParseState *Parser, Value *Var)
 void VariableStackFrameAdd(ParseState *Parser, const char *FuncName,
     int NumParams)
 {
-    struct StackFrame *NewFrame;
+    StackFrame *NewFrame;
 
     HeapPushStackFrame(Parser->pc);
     NewFrame = HeapAllocStack(Parser->pc,
-        sizeof(struct StackFrame)+sizeof(Value*)*NumParams);
+        sizeof(StackFrame)+sizeof(Value*)*NumParams);
     if (NewFrame == NULL)
         ProgramFail(Parser, "(VariableStackFrameAdd) out of memory");
 
     ParserCopy(&NewFrame->ReturnParser, Parser);
     NewFrame->FuncName = FuncName;
     NewFrame->Parameter = (NumParams > 0) ?
-        ((void*)((char*)NewFrame+sizeof(struct StackFrame))) : NULL;
+        ((void*)((char*)NewFrame+sizeof(StackFrame))) : NULL;
     TableInitTable(&NewFrame->LocalTable, &NewFrame->LocalHashTable[0],
         LOCAL_TABLE_SIZE, false);
     NewFrame->PreviousStackFrame = Parser->pc->TopStackFrame;

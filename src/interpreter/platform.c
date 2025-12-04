@@ -194,7 +194,7 @@ void AssignFail(ParseState *Parser, const char *Format,
 }
 
 /* exit lexing with a message */
-void LexFail(Picoc *pc, struct LexState *Lexer, const char *Message, ...)
+void LexFail(Picoc *pc, LexState *Lexer, const char *Message, ...)
 {
     va_list Args;
 

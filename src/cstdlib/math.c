@@ -160,7 +160,7 @@ void MathFloor(ParseState *Parser, Value *ReturnValue,
 }
 
 /* all math.h functions */
-struct LibraryFunction MathFunctions[] =
+LibraryFunction MathFunctions[] =
 {
      {MathAcos, "float acos(float);"},
      {MathAsin, "float asin(float);"},

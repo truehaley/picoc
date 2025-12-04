@@ -499,7 +499,7 @@ typedef int intptr_t;\
 ";
 
 /* all unistd.h functions */
-struct LibraryFunction UnistdFunctions[] =
+LibraryFunction UnistdFunctions[] =
 {
     {UnistdAccess, "int access(char*, int);"},
     {UnistdAlarm, "unsigned int alarm(unsigned int);"},

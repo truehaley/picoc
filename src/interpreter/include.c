@@ -26,8 +26,8 @@ void IncludeInit(Picoc *pc)
 /* clean up space used by the include system */
 void IncludeCleanup(Picoc *pc)
 {
-    struct IncludeLibrary *ThisInclude = pc->IncludeLibList;
-    struct IncludeLibrary *NextInclude;
+    IncludeLibrary *ThisInclude = pc->IncludeLibList;
+    IncludeLibrary *NextInclude;
 
     while (ThisInclude != NULL) {
         NextInclude = ThisInclude->NextLib;
@@ -40,10 +40,10 @@ void IncludeCleanup(Picoc *pc)
 
 /* register a new build-in include file */
 void IncludeRegister(Picoc *pc, const char *IncludeName,
-    void (*SetupFunction)(Picoc *pc), struct LibraryFunction *FuncList,
+    void (*SetupFunction)(Picoc *pc), LibraryFunction *FuncList,
     const char *SetupCSource)
 {
-    struct IncludeLibrary *NewLib = HeapAllocMem(pc, sizeof(struct IncludeLibrary));
+    IncludeLibrary *NewLib = HeapAllocMem(pc, sizeof(IncludeLibrary));
     NewLib->IncludeName = TableStrRegister(pc, IncludeName);
     NewLib->SetupFunction = SetupFunction;
     NewLib->FuncList = FuncList;
@@ -55,7 +55,7 @@ void IncludeRegister(Picoc *pc, const char *IncludeName,
 /* include all of the system headers */
 void PicocIncludeAllSystemHeaders(Picoc *pc)
 {
-    struct IncludeLibrary *ThisInclude = pc->IncludeLibList;
+    IncludeLibrary *ThisInclude = pc->IncludeLibList;
 
     for (; ThisInclude != NULL; ThisInclude = ThisInclude->NextLib)
         IncludeFile(pc, ThisInclude->IncludeName);
@@ -64,7 +64,7 @@ void PicocIncludeAllSystemHeaders(Picoc *pc)
 /* include one of a number of predefined libraries, or perhaps an actual file */
 void IncludeFile(Picoc *pc, char *FileName)
 {
-    struct IncludeLibrary *LInclude;
+    IncludeLibrary *LInclude;
 
     /* scan for the include file name to see if it's in our list
         of predefined includes */
@@ -96,4 +96,3 @@ void IncludeFile(Picoc *pc, char *FileName)
     /* not a predefined file, read a real file */
     PicocPlatformScanFile(pc, FileName);
 }
-

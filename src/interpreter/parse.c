@@ -2,7 +2,7 @@
 #include "picoc.h"
 #include "interpreter.h"
 
-static enum ParseResult ParseStatementMaybeRun(ParseState *Parser,
+static ParseResult ParseStatementMaybeRun(ParseState *Parser,
         int Condition, int CheckTrailingSemicolon);
 static int ParseCountParams(ParseState *Parser);
 static int ParseArrayInitializer(ParseState *Parser,
@@ -28,7 +28,7 @@ static int gEnableDebugger = false;
 void ParseCleanup(Picoc *pc)
 {
     while (pc->CleanupTokenList != NULL) {
-        struct CleanupTokenNode *Next = pc->CleanupTokenList->Next;
+        CleanupTokenNode *Next = pc->CleanupTokenList->Next;
 
         HeapFreeMem(pc, pc->CleanupTokenList->Tokens);
         if (pc->CleanupTokenList->SourceText != NULL)
@@ -40,7 +40,7 @@ void ParseCleanup(Picoc *pc)
 }
 
 /* parse a statement, but only run it if Condition is true */
-enum ParseResult ParseStatementMaybeRun(ParseState *Parser,
+ParseResult ParseStatementMaybeRun(ParseState *Parser,
     int Condition, int CheckTrailingSemicolon)
 {
     if (Parser->Mode != RunModeSkip && !Condition) {
@@ -49,7 +49,7 @@ enum ParseResult ParseStatementMaybeRun(ParseState *Parser,
         Parser->Mode = RunModeSkip;
         Result = ParseStatement(Parser, CheckTrailingSemicolon);
         Parser->Mode = OldMode;
-        return (enum ParseResult)Result;
+        return (ParseResult)Result;
     } else
         return ParseStatement(Parser, CheckTrailingSemicolon);
 }
@@ -97,7 +97,7 @@ Value *ParseFunctionDefinition(ParseState *Parser,
         ProgramFail(Parser, "too many parameters (%d allowed)", PARAMETER_MAX);
 
     FuncValue = VariableAllocValueAndData(pc, Parser,
-        sizeof(struct FuncDef) + sizeof(ValueType*)*ParamCount +
+        sizeof(FuncDef) + sizeof(ValueType*)*ParamCount +
         sizeof(const char*)*ParamCount,
         false, NULL, true);
     FuncValue->Typ = &pc->FunctionType;
@@ -105,7 +105,7 @@ Value *ParseFunctionDefinition(ParseState *Parser,
     FuncValue->Val->FuncDef.NumParams = ParamCount;
     FuncValue->Val->FuncDef.VarArgs = false;
     FuncValue->Val->FuncDef.ParamType =
-        (ValueType**)((char*)FuncValue->Val+sizeof(struct FuncDef));
+        (ValueType**)((char*)FuncValue->Val+sizeof(FuncDef));
     FuncValue->Val->FuncDef.ParamName =
         (char**)((char*)FuncValue->Val->FuncDef.ParamType +
             sizeof(ValueType*)*ParamCount);
@@ -586,7 +586,7 @@ void ParseTypedef(ParseState *Parser)
 }
 
 /* parse a statement */
-enum ParseResult ParseStatement(ParseState *Parser,
+ParseResult ParseStatement(ParseState *Parser,
     int CheckTrailingSemicolon)
 {
     int Condition;
@@ -867,15 +867,15 @@ void PicocParse(Picoc *pc, const char *FileName, const char *Source,
     int EnableDebugger)
 {
     char *RegFileName = TableStrRegister(pc, FileName);
-    enum ParseResult Ok;
+    ParseResult result;
     ParseState Parser;
-    struct CleanupTokenNode *NewCleanupNode;
+    CleanupTokenNode *NewCleanupNode;
 
     void *Tokens = LexAnalyse(pc, RegFileName, Source, SourceLen, NULL);
 
     /* allocate a cleanup node so we can clean up the tokens later */
     if (!CleanupNow) {
-        NewCleanupNode = HeapAllocMem(pc, sizeof(struct CleanupTokenNode));
+        NewCleanupNode = HeapAllocMem(pc, sizeof(CleanupTokenNode));
         if (NewCleanupNode == NULL)
             ProgramFailNoParser(pc, "(PicocParse) out of memory");
 
@@ -894,10 +894,10 @@ void PicocParse(Picoc *pc, const char *FileName, const char *Source,
         EnableDebugger);
 
     do {
-        Ok = ParseStatement(&Parser, true);
-    } while (Ok == ParseResultOk);
+        result = ParseStatement(&Parser, true);
+    } while (result == ParseResultOk);
 
-    if (Ok == ParseResultError)
+    if (result == ParseResultError)
         ProgramFail(&Parser, "parse error");
 
     /* clean up */
@@ -908,7 +908,7 @@ void PicocParse(Picoc *pc, const char *FileName, const char *Source,
 /* parse interactively */
 void PicocParseInteractiveNoStartPrompt(Picoc *pc, int EnableDebugger)
 {
-    enum ParseResult Ok;
+    ParseResult result;
     ParseState Parser;
 
     LexInitParser(&Parser, pc, NULL, NULL, pc->StrEmpty, true, EnableDebugger);
@@ -917,12 +917,12 @@ void PicocParseInteractiveNoStartPrompt(Picoc *pc, int EnableDebugger)
 
     do {
         LexInteractiveStatementPrompt(pc);
-        Ok = ParseStatement(&Parser, true);
+        result = ParseStatement(&Parser, true);
         LexInteractiveCompleted(pc, &Parser);
 
-    } while (Ok == ParseResultOk);
+    } while (result == ParseResultOk);
 
-    if (Ok == ParseResultError)
+    if (result == ParseResultError)
         ProgramFail(&Parser, "parse error");
 
     PlatformPrintf(pc->CStdOut, "\n");
