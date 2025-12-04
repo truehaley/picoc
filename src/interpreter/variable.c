@@ -92,7 +92,7 @@ void *VariableAlloc(Picoc *pc, ParseState *Parser, int Size, bool onHeap)
 /* allocate a value either on the heap or the stack using space
     dependent on what type we want */
 Value *VariableAllocValueAndData(Picoc *pc, ParseState *Parser,
-    int DataSize, int IsLValue, Value *LValueFrom, bool onHeap)
+    int DataSize, bool IsLValue, Value *LValueFrom, bool onHeap)
 {
     Value *NewValue = VariableAlloc(pc, Parser,
         MEM_ALIGN(sizeof(Value)) + DataSize, onHeap);
@@ -113,7 +113,7 @@ Value *VariableAllocValueAndData(Picoc *pc, ParseState *Parser,
 
 /* allocate a value given its type */
 Value *VariableAllocValueFromType(Picoc *pc, ParseState *Parser,
-    ValueType *Typ, int IsLValue, Value *LValueFrom, bool onHeap)
+    ValueType *Typ, bool IsLValue, Value *LValueFrom, bool onHeap)
 {
     int Size = TypeSize(Typ, Typ->ArraySize, false);
     Value *NewValue = VariableAllocValueAndData(pc, Parser, Size,
@@ -147,7 +147,7 @@ Value *VariableAllocValueAndCopy(Picoc *pc, ParseState *Parser,
 /* allocate a value either on the heap or the stack from an
     existing AnyValue and type */
 Value *VariableAllocValueFromExistingData(ParseState *Parser,
-    ValueType *Typ, AnyValue *FromValue, int IsLValue,
+    ValueType *Typ, AnyValue *FromValue, bool IsLValue,
     Value *LValueFrom)
 {
     Value *NewValue = VariableAlloc(Parser->pc, Parser,

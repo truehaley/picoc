@@ -212,10 +212,10 @@ struct ValueStruct {
     ValueType *Typ;      /* the type of this value */
     AnyValue *Val;        /* pointer to the AnyValue which holds the actual content */
     Value *LValueFrom;   /* if an LValue, this is a Value our LValue is contained within (or NULL) */
-    char ValOnHeap;             /* this Value is on the heap */
-    char ValOnStack;            /* the AnyValue is on the stack along with this Value */
-    char AnyValOnHeap;          /* the AnyValue is separately allocated from the Value on the heap */
-    char IsLValue;              /* is modifiable and is allocated somewhere we can usefully modify it */
+    bool ValOnHeap;             /* this Value is on the heap */
+    bool ValOnStack;            /* the AnyValue is on the stack along with this Value */
+    bool AnyValOnHeap;          /* the AnyValue is separately allocated from the Value on the heap */
+    bool IsLValue;              /* is modifiable and is allocated somewhere we can usefully modify it */
     int ScopeID;                /* to know when it goes out of scope */
     char OutOfScope;
 };
@@ -529,13 +529,13 @@ extern void VariableTableCleanup(Picoc *pc, HashTable *entries);
 extern void *VariableAlloc(Picoc *pc, ParseState *Parser, int Size, bool onHeap);
 extern void VariableStackPop(ParseState *Parser, Value *Var);
 extern Value *VariableAllocValueAndData(Picoc *pc, ParseState *Parser,
-    int DataSize, int IsLValue, Value *LValueFrom, bool onHeap);
+    int DataSize, bool IsLValue, Value *LValueFrom, bool onHeap);
 extern Value *VariableAllocValueAndCopy(Picoc *pc, ParseState *Parser,
     Value *FromValue, bool onHeap);
 extern Value *VariableAllocValueFromType(Picoc *pc, ParseState *Parser,
-    ValueType *Typ, int IsLValue, Value *LValueFrom, bool onHeap);
+    ValueType *Typ, bool IsLValue, Value *LValueFrom, bool onHeap);
 extern Value *VariableAllocValueFromExistingData(ParseState *Parser,
-    ValueType *Typ, AnyValue *FromValue, int IsLValue,
+    ValueType *Typ, AnyValue *FromValue, bool IsLValue,
     Value *LValueFrom);
 extern Value *VariableAllocValueShared(ParseState *Parser,
     Value *FromValue);
