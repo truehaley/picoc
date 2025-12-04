@@ -218,23 +218,23 @@ prototype. The "{ NULL, NULL }" line at the end is required.
 The native C function is called with these parameters:
 
 ```C
-void MyCFunc(struct ParseState *Parser,
-			 struct Value *ReturnValue,
-			 struct Value **Param,
+void MyCFunc(ParseState *Parser,
+			 Value *ReturnValue,
+			 Value **Param,
 			 int NumArgs);
 ```
 
-* struct ParseState *Parser - this contains internal information about the progress of parsing. It's mostly used here so error messages from your function can report the line number where an error occurred.
-* struct Value *ReturnValue - this points to the place you can put your return value. This is pre-created as a value of the correct return type so all you have to do is store your result here.
-* struct Value **Param - this points to an array of parameters. These are all pre-checked as being the correct type.
+* ParseState *Parser - this contains internal information about the progress of parsing. It's mostly used here so error messages from your function can report the line number where an error occurred.
+* Value *ReturnValue - this points to the place you can put your return value. This is pre-created as a value of the correct return type so all you have to do is store your result here.
+* Value **Param - this points to an array of parameters. These are all pre-checked as being the correct type.
 * int NumArgs - this is the number of parameters. Normally this will already have been checked and will be exactly what you've defined in your function prototype. It is however possible to define functions with variable numbers of arguments using a stdarg-like "..." method and this is where you find out how many parameters were passed in if you're doing that.
 
 Here's an example function definition of "random" (as defined above):
 
 ```C
-void Crandom(struct ParseState *Parser,
-			 struct Value *ReturnValue,
-			 struct Value **Param,
+void Crandom(ParseState *Parser,
+			 Value *ReturnValue,
+			 Value **Param,
 			 int NumArgs)
 {
     ReturnValue->Val->Integer = random() % Param[0]->Val->Integer;
@@ -321,9 +321,9 @@ Here's a more sophisticated method, using the internal functions of picoc direct
 ```C
 void PlatformLibraryInit()
 {
-    struct ParseState Parser;
+    ParseState Parser;
     char *Identifier;
-    struct ValueType *ParsedType;
+    ValueType *ParsedType;
     void *Tokens;
     char *IntrinsicName = TableStrRegister("complex library");
     const char *StructDefinition = "struct complex { int i; int j; }";
@@ -353,8 +353,8 @@ And finally we can define the library function:
 ```C
 struct complex {int i; int j;};  /* make this C declaration match the picoc one */
 
-void ShowComplex(struct ParseState *Parser,
-				 struct Value *ReturnValue, struct Value **Param, int NumArgs)
+void ShowComplex(ParseState *Parser,
+				 Value *ReturnValue, Value **Param, int NumArgs)
 {
     struct complex *ComplexVal = Param[0]->Val->NativePointer;  /* casts the pointer */
 
@@ -414,7 +414,7 @@ void PlatformLibraryInit()
     VariableDefinePlatformVar(NULL,
     						  "RobotIsExploding",
     						  &IntType,
-    						  (union AnyValue*)&RobotIsExploding,
+    						  (AnyValue*)&RobotIsExploding,
     						  false);
 }
 ```

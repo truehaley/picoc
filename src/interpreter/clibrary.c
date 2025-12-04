@@ -16,26 +16,26 @@ void LibraryInit(Picoc *pc)
     /* define the version number macro */
     pc->VersionString = TableStrRegister(pc, PICOC_VERSION);
     VariableDefinePlatformVar(pc, NULL, "PICOC_VERSION", pc->CharPtrType,
-        (union AnyValue*)&pc->VersionString, false);
+        (AnyValue*)&pc->VersionString, false);
 
     /* define endian-ness macros */
     BigEndian = ((*(char*)&__ENDIAN_CHECK__) == 0);
     LittleEndian = ((*(char*)&__ENDIAN_CHECK__) == 1);
 
     VariableDefinePlatformVar(pc, NULL, "BIG_ENDIAN", &pc->IntType,
-        (union AnyValue*)&BigEndian, false);
+        (AnyValue*)&BigEndian, false);
     VariableDefinePlatformVar(pc, NULL, "LITTLE_ENDIAN", &pc->IntType,
-        (union AnyValue*)&LittleEndian, false);
+        (AnyValue*)&LittleEndian, false);
 }
 
 /* add a library */
 void LibraryAdd(Picoc *pc, struct LibraryFunction *FuncList)
 {
-    struct ParseState Parser;
+    ParseState Parser;
     int Count;
     char *Identifier;
-    struct ValueType *ReturnType;
-    struct Value *NewValue;
+    ValueType *ReturnType;
+    Value *NewValue;
     void *Tokens;
     char *IntrinsicName = TableStrRegister(pc, "c library");
 
@@ -54,7 +54,7 @@ void LibraryAdd(Picoc *pc, struct LibraryFunction *FuncList)
 }
 
 /* print a type to a stream without using printf/sprintf */
-void PrintType(struct ValueType *Typ, IOFILE *Stream)
+void PrintType(ValueType *Typ, IOFILE *Stream)
 {
     switch (Typ->Base) {
     case TypeVoid:
@@ -125,4 +125,3 @@ void PrintType(struct ValueType *Typ, IOFILE *Stream)
         break;
     }
 }
-

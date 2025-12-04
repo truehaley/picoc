@@ -61,7 +61,7 @@ void PicocCleanup(Picoc *pc)
 void PicocCallMain(Picoc *pc, int argc, char **argv)
 {
     /* check if the program wants arguments */
-    struct Value *FuncValue = NULL;
+    Value *FuncValue = NULL;
 
     if (!VariableDefined(pc, TableStrRegister(pc, "main")))
         ProgramFailNoParser(pc, "main() is not defined");
@@ -73,9 +73,9 @@ void PicocCallMain(Picoc *pc, int argc, char **argv)
     if (FuncValue->Val->FuncDef.NumParams != 0) {
         /* define the arguments */
         VariableDefinePlatformVar(pc, NULL, "__argc", &pc->IntType,
-            (union AnyValue*)&argc, false);
+            (AnyValue*)&argc, false);
         VariableDefinePlatformVar(pc, NULL, "__argv", pc->CharPtrPtrType,
-            (union AnyValue*)&argv, false);
+            (AnyValue*)&argv, false);
     }
 
     if (FuncValue->Val->FuncDef.ReturnType == &pc->VoidType) {
@@ -89,7 +89,7 @@ void PicocCallMain(Picoc *pc, int argc, char **argv)
                 gEnableDebugger);
     } else {
         VariableDefinePlatformVar(pc, NULL, "__exit_value", &pc->IntType,
-            (union AnyValue *)&pc->PicocExitValue, true);
+            (AnyValue *)&pc->PicocExitValue, true);
 
         if (FuncValue->Val->FuncDef.NumParams == 0)
             PicocParse(pc, "startup", CALL_MAIN_NO_ARGS_RETURN_INT,
@@ -144,7 +144,7 @@ void PrintSourceTextErrorLine(IOFILE *Stream, const char *FileName,
 }
 
 /* exit with a message */
-void ProgramFail(struct ParseState *Parser, const char *Message, ...)
+void ProgramFail(ParseState *Parser, const char *Message, ...)
 {
     va_list Args;
 
@@ -170,8 +170,8 @@ void ProgramFailNoParser(Picoc *pc, const char *Message, ...)
 }
 
 /* like ProgramFail() but gives descriptive error messages for assignment */
-void AssignFail(struct ParseState *Parser, const char *Format,
-    struct ValueType *Type1, struct ValueType *Type2, int Num1, int Num2,
+void AssignFail(ParseState *Parser, const char *Format,
+    ValueType *Type1, ValueType *Type2, int Num1, int Num2,
     const char *FuncName, int ParamNo)
 {
     IOFILE *Stream = Parser->pc->CStdOut;
@@ -235,7 +235,7 @@ void PlatformVPrintf(IOFILE *Stream, const char *Format, va_list Args)
                 PrintCh(va_arg(Args, int), Stream);
                 break;
             case 't':
-                PrintType(va_arg(Args, struct ValueType*), Stream);
+                PrintType(va_arg(Args, ValueType*), Stream);
                 break;
             case 'f':
                 PrintFP(va_arg(Args, double), Stream);
